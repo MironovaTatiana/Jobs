@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WebApi</name>
+    </assembly>
+    <members>
+        <member name="T:WebApi.Controllers.EventsController">
+            <summary>
+            Контроллер для добавления событий
+            </summary>
+        </member>
+        <member name="F:WebApi.Controllers.EventsController._result">
+            <summary>
+            Результат запроса
+            </summary>
+        </member>
+        <member name="F:WebApi.Controllers.EventsController._useCase">
+            <summary>
+            Поле для добавления событий
+            </summary>
+        </member>
+        <member name="M:WebApi.Controllers.EventsController.#ctor(Application.UseCases.AddCalendarEvents.IAddCalendarEventsUseCase)">
+            <summary>
+            Контроллер для добавления событий
+            </summary>
+        </member>
+        <member name="M:WebApi.Controllers.EventsController.Post(System.Collections.Generic.List{Application.UseCases.AddCalendarEvents.CalendarEventDto})">
+            <summary>
+            Добавление событий в календарь
+            </summary>
+        </member>
+        <member name="M:WebApi.Controllers.EventsController.Fail(System.String)">
+            <summary>
+            Неудача
+            </summary>
+        </member>
+        <member name="M:WebApi.Controllers.EventsController.Ok(System.String,System.Collections.Generic.IEnumerable{Domain.ICalendarEvent})">
+            <summary>
+            Успешно
+            </summary>
+        </member>
+        <member name="T:WebApi.Modules.SQLExtensions">
+            <summary>
+            Класс, содержащий специальные методы расширения для IServiceCollection
+            </summary>
+        </member>
+        <member name="M:WebApi.Modules.SQLExtensions.AddSQLServer(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Добавление SQL соединения
+            </summary>
+        </member>
+        <member name="T:WebApi.Startup">
+            <summary>
+            Класс для запуска приложения
+            </summary>
+        </member>
+        <member name="P:WebApi.Startup.Configuration">
+            <summary>
+            Конфигурация
+            </summary>
+        </member>
+        <member name="M:WebApi.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Запуск
+            </summary>
+        </member>
+        <member name="M:WebApi.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Подключение необходимых сервисов
+            </summary>
+        </member>
+        <member name="M:WebApi.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            Конфигурация
+            </summary>
+        </member>
+    </members>
+</doc>

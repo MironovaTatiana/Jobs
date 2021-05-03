@@ -20,6 +20,7 @@ using Microsoft.OpenApi.Models;
 using Application.UseCases.AddJobsList;
 using Application.UseCases.GetJobsList;
 using Application.Services;
+using Application.UseCases.GetJob;
 
 namespace WebApi
 {
@@ -63,6 +64,7 @@ namespace WebApi
 
             services.AddScoped<IAddJobsListUseCase, AddJobsListUseCase>();
             services.AddScoped<IGetJobsListUseCase, GetJobsListUseCase>();
+            services.AddScoped<IGetJobUseCase, GetJobUseCase>();
             services.AddScoped<IVacanciesService, VacanciesService>();
 
             services.AddMvc();

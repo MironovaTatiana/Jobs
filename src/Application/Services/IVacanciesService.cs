@@ -13,5 +13,10 @@ namespace Application.Services
         /// Получение списка вакансий
         /// </summary>
         ValueTask<IEnumerable<IJob>> GetVacanciesList(int count);
+
+        /// <summary>
+        /// Получение вакансии по идентификатору
+        /// </summary>
+        ValueTask<IJob> GetVacancyById(int id);
     }
 }

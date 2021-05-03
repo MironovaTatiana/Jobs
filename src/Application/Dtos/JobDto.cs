@@ -1,11 +1,13 @@
-using System;
-
-namespace Domain
+﻿namespace Application.Dtos
 {
+    using System;
+    using System.ComponentModel.DataAnnotations;
+    using Domain;
+
     /// <summary>
     /// Вакансия
     /// </summary>
-    public class Job : IJob
+    public class JobDto : IJob
     {
         /// <summary>
         /// Идентификатор

@@ -9,13 +9,13 @@ namespace Application.UseCases.GetJobsList
     public interface IOutputPort
     {
         /// <summary>
-        /// Сбой
+        /// Неудача
         /// </summary>
-        void Fail();
+        void Fail(string message);
 
         /// <summary>
         /// Успешно
         /// </summary>
-        void Ok(IEnumerable<IJob> jobsList);
+        void Ok(string message, IEnumerable<IJob> jobsList);
     }
 }

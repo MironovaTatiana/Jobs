@@ -18,6 +18,8 @@ using Microsoft.Extensions.Logging;
 using WebApi.Modules;
 using Microsoft.OpenApi.Models;
 using Application.UseCases.AddJobsList;
+using Application.UseCases.GetJobsList;
+using Application.Services;
 
 namespace WebApi
 {
@@ -60,6 +62,8 @@ namespace WebApi
            // services.AddHttpContextAccessor();
 
             services.AddScoped<IAddJobsListUseCase, AddJobsListUseCase>();
+            services.AddScoped<IGetJobsListUseCase, GetJobsListUseCase>();
+            services.AddScoped<IVacanciesService, VacanciesService>();
 
             services.AddMvc();
             services.AddSwaggerGen(c =>

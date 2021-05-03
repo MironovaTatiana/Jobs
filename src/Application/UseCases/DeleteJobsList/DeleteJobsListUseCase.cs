@@ -22,7 +22,7 @@ namespace Application.UseCases.DeleteJobsList
         #region Конструктор
 
         /// <summary>
-        /// Удаление календарных событий
+        /// Удаление вакансий
         /// </summary>
         public DeleteJobsListUseCase(IJobsRepository jobsRepository)
         {

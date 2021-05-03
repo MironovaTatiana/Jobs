@@ -2,7 +2,7 @@ namespace Application.UseCases.AddJobsList
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Domain;
+    using Application.Dtos;
 
     /// <summary>
     /// Интерфейс для добавления вакансий
@@ -21,5 +21,4 @@ namespace Application.UseCases.AddJobsList
         void SetOutputPort(IOutputPort outputPort);
     }
 
-
-    }
+}

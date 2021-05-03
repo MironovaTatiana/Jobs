@@ -1,21 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Application.Dtos;
-using Application.UseCases.AddJobsList;
+using Application.UseCases.GetJobsList;
 using Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace WebApi.Controllers
 {
     /// <summary>
-    /// Контроллер для добавления вакансий
+    /// Контроллер для получения списка вакансий
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    public class JobsController : ControllerBase, IOutputPort
+    public class JobsListController : ControllerBase, IOutputPort
     {
         #region Поля
 
@@ -25,18 +23,18 @@ namespace WebApi.Controllers
         private IActionResult _result;
 
         /// <summary>
-        /// Поле для добавления вакансий
+        /// Поле для получения вакансий
         /// </summary>
-        private readonly IAddJobsListUseCase _useCase;
+        private readonly IGetJobsListUseCase _useCase;
 
         #endregion
 
         #region Конструктор
 
         /// <summary>
-        /// Контроллер для добавления вакансий
+        /// Контроллер для получения списка вакансий
         /// </summary>
-        public JobsController(IAddJobsListUseCase useCase) 
+        public JobsListController(IGetJobsListUseCase useCase) 
         {
             this._useCase = useCase;
         }
@@ -46,21 +44,18 @@ namespace WebApi.Controllers
         #region Запросы
 
         /// <summary>
-        /// Добавление вакансий
+        /// Получение списка вакансий
         /// </summary>
-        [HttpPost]
+        [HttpGet("{count:int}", Name = "GetJobsList")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Post(
-            [FromBody][BindRequired] List<JobDto> jobsList)
+        public async ValueTask<IEnumerable<IJob>> Get(
+            [FromRoute][Required] int count)
         {
             _useCase.SetOutputPort(this);
-            await _useCase.ExecuteAsync(jobsList)
+            return await _useCase.ExecuteAsync(count)
                 .ConfigureAwait(false);
-
-            return this.Ok(); 
-            //this._result;
         }
 
         /// <summary>

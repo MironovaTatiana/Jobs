@@ -1,7 +1,11 @@
 namespace Application.UseCases.GetJobsList
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
+    using Application.Dtos;
+    using Application.Services;
     using Domain;
 
 
@@ -13,9 +17,14 @@ namespace Application.UseCases.GetJobsList
         #region Поля
 
         /// <summary>
-        /// Репозиторий
+        /// Сервис вакансий
         /// </summary>
-        private readonly IJobsRepository _jobsRepository;
+        private readonly IVacanciesService _vacanciesService;
+
+        /// <summary>
+        /// Выходной порт
+        /// </summary>
+        private IOutputPort _outputPort;
 
         #endregion
 
@@ -24,9 +33,9 @@ namespace Application.UseCases.GetJobsList
         /// <summary>
         /// Получение списка вакансий
         /// </summary>
-        public GetJobsListUseCase(IJobsRepository jobsRepository)
+        public GetJobsListUseCase(IVacanciesService vacanciesService)
         {
-            _jobsRepository = jobsRepository;
+            _vacanciesService = vacanciesService;
         }
 
         #endregion
@@ -34,12 +43,34 @@ namespace Application.UseCases.GetJobsList
         #region Методы
 
         /// <summary>
+        /// Получение списка вакансий
+        /// </summary>
+        public async ValueTask<IEnumerable<IJob>> ExecuteAsync(int count)
+        {
+            IEnumerable<IJob> vacancies = await _vacanciesService.GetVacanciesList(count);
+            var sortedVacancies = new List<JobDto>();
+
+            foreach (JobDto job in vacancies.OrderBy(w => w.Name))
+            {
+                sortedVacancies.Add(job);
+            }
+
+            if (vacancies.Count() == count)
+            {
+                this._outputPort?.Ok("Список вакансий получен", vacancies);
+            }
+            else
+            {
+                this._outputPort?.Fail("Возникла ошибка во время получения списка вакансий");
+            }
+
+            return sortedVacancies;
+        }
+
+        /// <summary>
         /// Установка выходного порта
         /// </summary>
-        void IGetJobsListUseCase.SetOutputPort(IOutputPort outputPort)
-        {
-            throw new NotImplementedException();
-        }
+        void IGetJobsListUseCase.SetOutputPort(IOutputPort outputPort) => this._outputPort = outputPort;
 
         #endregion
     }

@@ -1,4 +1,4 @@
-namespace Application.UseCases.DeleteJobsList
+п»їnamespace Application.UseCases.DeleteJobsList
 {
     using System;
     using System.Collections.Generic;
@@ -6,23 +6,23 @@ namespace Application.UseCases.DeleteJobsList
     using Domain;
 
     /// <summary>
-    /// Удаление вакансий
+    /// РЈРґР°Р»РµРЅРёРµ РІР°РєР°РЅСЃРёР№
     /// </summary>
     public sealed class DeleteJobsListUseCase : IDeleteJobsListUseCase
     {
-        #region Поля
+        #region РџРѕР»СЏ
 
         /// <summary>
-        /// Репозиторий
+        /// Р РµРїРѕР·РёС‚РѕСЂРёР№
         /// </summary>
         private readonly IJobsRepository _jobsRepository;
 
         #endregion
 
-        #region Конструктор
+        #region РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 
         /// <summary>
-        /// Удаление вакансий
+        /// РЈРґР°Р»РµРЅРёРµ РІР°РєР°РЅСЃРёР№
         /// </summary>
         public DeleteJobsListUseCase(IJobsRepository jobsRepository)
         {
@@ -31,10 +31,10 @@ namespace Application.UseCases.DeleteJobsList
 
         #endregion
 
-        #region Методы
+        #region РњРµС‚РѕРґС‹
 
         /// <summary>
-        /// Установка выходного порта
+        /// РЈСЃС‚Р°РЅРѕРІРєР° РІС‹С…РѕРґРЅРѕРіРѕ РїРѕСЂС‚Р°
         /// </summary>
         void IDeleteJobsListUseCase.SetOutputPort(IOutputPort outputPort)
         {

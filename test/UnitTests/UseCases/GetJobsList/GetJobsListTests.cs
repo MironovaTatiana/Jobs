@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+п»їusing System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Services;
@@ -11,12 +11,12 @@ using Application.Dtos;
 namespace UnitTests
 {
     /// <summary>
-    /// Класс для тестирования получения списка вакансий
+    /// РљР»Р°СЃСЃ РґР»СЏ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ РїРѕР»СѓС‡РµРЅРёСЏ СЃРїРёСЃРєР° РІР°РєР°РЅСЃРёР№
     /// </summary>
     [TestFixture(TestOf = typeof(GetJobsListUseCase))]
     public class GetJobsListTests
     {
-        [Test(Description = "Тест выполняет сравнение количества полученных вакансий и переданного параметра")]
+        [Test(Description = "РўРµСЃС‚ РІС‹РїРѕР»РЅСЏРµС‚ СЃСЂР°РІРЅРµРЅРёРµ РєРѕР»РёС‡РµСЃС‚РІР° РїРѕР»СѓС‡РµРЅРЅС‹С… РІР°РєР°РЅСЃРёР№ Рё РїРµСЂРµРґР°РЅРЅРѕРіРѕ РїР°СЂР°РјРµС‚СЂР°")]
         [TestCase(3)]
         public async Task ExecuteAsync_CompareJobsCountAndParametrValue(int count)
         {
@@ -34,7 +34,7 @@ namespace UnitTests
             Assert.AreEqual(count, result.Count());
         }
 
-        [Test(Description = "Тест выполняет сравнение количества полученных вакансий и переданного параметра и ожидает сообщение об отрицательном результате")]
+        [Test(Description = "РўРµСЃС‚ РІС‹РїРѕР»РЅСЏРµС‚ СЃСЂР°РІРЅРµРЅРёРµ РєРѕР»РёС‡РµСЃС‚РІР° РїРѕР»СѓС‡РµРЅРЅС‹С… РІР°РєР°РЅСЃРёР№ Рё РїРµСЂРµРґР°РЅРЅРѕРіРѕ РїР°СЂР°РјРµС‚СЂР° Рё РѕР¶РёРґР°РµС‚ СЃРѕРѕР±С‰РµРЅРёРµ РѕР± РѕС‚СЂРёС†Р°С‚РµР»СЊРЅРѕРј СЂРµР·СѓР»СЊС‚Р°С‚Рµ")]
         [TestCase(2)]
         public async Task ExecuteAsync_CompareJobsCountAndParametrValueReturnFail(int count)
         {
@@ -56,10 +56,10 @@ namespace UnitTests
             await useCase.ExecuteAsync(count);
 
             // Assert
-            Assert.AreEqual("Возникла ошибка во время получения списка вакансий", expectedMessage);
+            Assert.AreEqual("Р’РѕР·РЅРёРєР»Р° РѕС€РёР±РєР° РІРѕ РІСЂРµРјСЏ РїРѕР»СѓС‡РµРЅРёСЏ СЃРїРёСЃРєР° РІР°РєР°РЅСЃРёР№", expectedMessage);
         }
 
-        [Test(Description = "Тест выполняет сравнение количества полученных вакансий и переданного параметра и ожидает сообщение о положительном результате")]
+        [Test(Description = "РўРµСЃС‚ РІС‹РїРѕР»РЅСЏРµС‚ СЃСЂР°РІРЅРµРЅРёРµ РєРѕР»РёС‡РµСЃС‚РІР° РїРѕР»СѓС‡РµРЅРЅС‹С… РІР°РєР°РЅСЃРёР№ Рё РїРµСЂРµРґР°РЅРЅРѕРіРѕ РїР°СЂР°РјРµС‚СЂР° Рё РѕР¶РёРґР°РµС‚ СЃРѕРѕР±С‰РµРЅРёРµ Рѕ РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕРј СЂРµР·СѓР»СЊС‚Р°С‚Рµ")]
         [TestCase(3)]
         public async Task ExecuteAsync_CompareJobsCountAndParametrValueReturnOk(int count)
         {
@@ -80,19 +80,19 @@ namespace UnitTests
             await useCase.ExecuteAsync(count);
 
             // Assert
-            Assert.AreEqual("Список вакансий получен", expectedMessage);
+            Assert.AreEqual("РЎРїРёСЃРѕРє РІР°РєР°РЅСЃРёР№ РїРѕР»СѓС‡РµРЅ", expectedMessage);
         }
 
         /// <summary>
-        /// Получение списка вакансий
+        /// РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РІР°РєР°РЅСЃРёР№
         /// </summary>
         private static IEnumerable<JobDto> GetVacanciesList()
         {
             return new List<JobDto>()
             {
-                new JobDto {  Name = "Специалист по работе с клиентами", Id = 43904540, SalaryFrom = 1000, SalaryTo = 3000 },
-                new JobDto {  Name = "Менеджер по продажам", Id = 43904541, SalaryFrom = 1000, SalaryTo = 4000 },
-                new JobDto {  Name = "Аналитик", Id = 43904542, SalaryFrom = 1000, SalaryTo = 5000 },
+                new JobDto {  Name = "РЎРїРµС†РёР°Р»РёСЃС‚ РїРѕ СЂР°Р±РѕС‚Рµ СЃ РєР»РёРµРЅС‚Р°РјРё", Id = 43904540, SalaryFrom = 1000, SalaryTo = 3000 },
+                new JobDto {  Name = "РњРµРЅРµРґР¶РµСЂ РїРѕ РїСЂРѕРґР°Р¶Р°Рј", Id = 43904541, SalaryFrom = 1000, SalaryTo = 4000 },
+                new JobDto {  Name = "РђРЅР°Р»РёС‚РёРє", Id = 43904542, SalaryFrom = 1000, SalaryTo = 5000 },
             };
         }
     }

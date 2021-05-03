@@ -1,4 +1,4 @@
-namespace Application.UseCases.AddJobsList
+п»їnamespace Application.UseCases.AddJobsList
 {
     using System;
     using System.Collections.Generic;
@@ -8,29 +8,29 @@ namespace Application.UseCases.AddJobsList
     using Domain;
 
     /// <summary>
-    /// Добавление вакансий
-    /// Валидирует вакансию перед добавлением, добавляет вакансию в БД и возвращает добавленные вакансии
+    /// Р”РѕР±Р°РІР»РµРЅРёРµ РІР°РєР°РЅСЃРёР№
+    /// Р’Р°Р»РёРґРёСЂСѓРµС‚ РІР°РєР°РЅСЃРёСЋ РїРµСЂРµРґ РґРѕР±Р°РІР»РµРЅРёРµРј, РґРѕР±Р°РІР»СЏРµС‚ РІР°РєР°РЅСЃРёСЋ РІ Р‘Р” Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РґРѕР±Р°РІР»РµРЅРЅС‹Рµ РІР°РєР°РЅСЃРёРё
     /// </summary>
     public sealed class AddJobsListUseCase : IAddJobsListUseCase
     {
-        #region Поля
+        #region РџРѕР»СЏ
 
         /// <summary>
-        /// Репозиторий
+        /// Р РµРїРѕР·РёС‚РѕСЂРёР№
         /// </summary>
         private readonly IJobsRepository _jobsRepository;
 
         /// <summary>
-        /// Выходной порт
+        /// Р’С‹С…РѕРґРЅРѕР№ РїРѕСЂС‚
         /// </summary>
         private IOutputPort _outputPort;
 
         #endregion
 
-        #region Конструктор
+        #region РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 
         /// <summary>
-        /// Добавление вакансий
+        /// Р”РѕР±Р°РІР»РµРЅРёРµ РІР°РєР°РЅСЃРёР№
         /// </summary>
         public AddJobsListUseCase(IJobsRepository jobsRepository)
         {
@@ -39,10 +39,10 @@ namespace Application.UseCases.AddJobsList
 
         #endregion
 
-        #region Задачи
+        #region Р—Р°РґР°С‡Рё
 
         /// <summary>
-        /// Выполнение
+        /// Р’С‹РїРѕР»РЅРµРЅРёРµ
         /// </summary>
         public Task ExecuteAsync(IEnumerable<JobDto> jobsList)
         {
@@ -56,26 +56,26 @@ namespace Application.UseCases.AddJobsList
             {
                 if (!(job != null))
                 {
-                    this._outputPort?.Fail("Список содержит невалидную вакансию");
+                    this._outputPort?.Fail("РЎРїРёСЃРѕРє СЃРѕРґРµСЂР¶РёС‚ РЅРµРІР°Р»РёРґРЅСѓСЋ РІР°РєР°РЅСЃРёСЋ");
 
                     return Task.CompletedTask;
-                    //throw new JobsException("Вакансии не добавлены");
+                    //throw new JobsException("Р’Р°РєР°РЅСЃРёРё РЅРµ РґРѕР±Р°РІР»РµРЅС‹");
                 }
 
                 validJobsList.Add(job);               
             }
 
-            this._outputPort?.Ok("Все вакансии в списке валидные", validJobsList);
+            this._outputPort?.Ok("Р’СЃРµ РІР°РєР°РЅСЃРёРё РІ СЃРїРёСЃРєРµ РІР°Р»РёРґРЅС‹Рµ", validJobsList);
 
             return this._jobsRepository.AddRange(validJobsList);
         }
 
         #endregion
 
-        #region Методы
+        #region РњРµС‚РѕРґС‹
 
         /// <summary>
-        /// Установка выходного порта
+        /// РЈСЃС‚Р°РЅРѕРІРєР° РІС‹С…РѕРґРЅРѕРіРѕ РїРѕСЂС‚Р°
         /// </summary>
         void IAddJobsListUseCase.SetOutputPort(IOutputPort outputPort) => this._outputPort = outputPort;
 

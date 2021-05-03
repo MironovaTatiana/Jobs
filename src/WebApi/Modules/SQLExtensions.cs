@@ -1,4 +1,4 @@
-namespace WebApi.Modules
+п»їnamespace WebApi.Modules
 {
     using DataAccess;
     using Domain;
@@ -7,12 +7,12 @@ namespace WebApi.Modules
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// Класс, содержащий специальные методы расширения для IServiceCollection
+    /// РљР»Р°СЃСЃ, СЃРѕРґРµСЂР¶Р°С‰РёР№ СЃРїРµС†РёР°Р»СЊРЅС‹Рµ РјРµС‚РѕРґС‹ СЂР°СЃС€РёСЂРµРЅРёСЏ РґР»СЏ IServiceCollection
     /// </summary>
     public static class SQLExtensions
     {
         /// <summary>
-        /// Добавление SQL соединения
+        /// Р”РѕР±Р°РІР»РµРЅРёРµ SQL СЃРѕРµРґРёРЅРµРЅРёСЏ
         /// </summary>
         public static IServiceCollection AddSQLServer(
             this IServiceCollection services,

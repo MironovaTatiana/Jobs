@@ -1,4 +1,4 @@
-namespace Application.UseCases.GetJobsList
+п»їnamespace Application.UseCases.GetJobsList
 {
     using System;
     using System.Collections.Generic;
@@ -10,28 +10,28 @@ namespace Application.UseCases.GetJobsList
 
 
     /// <summary>
-    /// Получение списка вакансий
+    /// РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РІР°РєР°РЅСЃРёР№
     /// </summary>
     public sealed class GetJobsListUseCase : IGetJobsListUseCase
     {
-        #region Поля
+        #region РџРѕР»СЏ
 
         /// <summary>
-        /// Сервис вакансий
+        /// РЎРµСЂРІРёСЃ РІР°РєР°РЅСЃРёР№
         /// </summary>
         private readonly IVacanciesService _vacanciesService;
 
         /// <summary>
-        /// Выходной порт
+        /// Р’С‹С…РѕРґРЅРѕР№ РїРѕСЂС‚
         /// </summary>
         private IOutputPort _outputPort;
 
         #endregion
 
-        #region Конструктор
+        #region РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 
         /// <summary>
-        /// Получение списка вакансий
+        /// РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РІР°РєР°РЅСЃРёР№
         /// </summary>
         public GetJobsListUseCase(IVacanciesService vacanciesService)
         {
@@ -40,10 +40,10 @@ namespace Application.UseCases.GetJobsList
 
         #endregion
 
-        #region Методы
+        #region РњРµС‚РѕРґС‹
 
         /// <summary>
-        /// Получение списка вакансий
+        /// РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РІР°РєР°РЅСЃРёР№
         /// </summary>
         public async ValueTask<IEnumerable<IJob>> ExecuteAsync(int count)
         {
@@ -57,18 +57,18 @@ namespace Application.UseCases.GetJobsList
 
             if (vacancies.Count() == count)
             {
-                this._outputPort?.Ok("Список вакансий получен", vacancies);
+                this._outputPort?.Ok("РЎРїРёСЃРѕРє РІР°РєР°РЅСЃРёР№ РїРѕР»СѓС‡РµРЅ", vacancies);
             }
             else
             {
-                this._outputPort?.Fail("Возникла ошибка во время получения списка вакансий");
+                this._outputPort?.Fail("Р’РѕР·РЅРёРєР»Р° РѕС€РёР±РєР° РІРѕ РІСЂРµРјСЏ РїРѕР»СѓС‡РµРЅРёСЏ СЃРїРёСЃРєР° РІР°РєР°РЅСЃРёР№");
             }
 
             return sortedVacancies;
         }
 
         /// <summary>
-        /// Установка выходного порта
+        /// РЈСЃС‚Р°РЅРѕРІРєР° РІС‹С…РѕРґРЅРѕРіРѕ РїРѕСЂС‚Р°
         /// </summary>
         void IGetJobsListUseCase.SetOutputPort(IOutputPort outputPort) => this._outputPort = outputPort;
 

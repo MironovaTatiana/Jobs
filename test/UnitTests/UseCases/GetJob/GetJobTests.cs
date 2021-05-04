@@ -22,10 +22,11 @@ namespace UnitTests
         {
             // Arrange
             var mock = new Mock<IVacanciesService>();
+            var mockRepository = new Mock<IJobsRepository>();
 
-            mock.Setup(r => r.GetVacancyById(id)).Returns(new ValueTask<IJob>(GetVacancy()));
+            mock.Setup(r => r.GetVacancyById(id)).Returns(new ValueTask<JobDto>(GetVacancy()));
 
-            IGetJobUseCase useCase = new GetJobUseCase(mock.Object);
+            IGetJobUseCase useCase = new GetJobUseCase(mock.Object, mockRepository.Object);
 
             // Act
             IJob result = await useCase.ExecuteAsync(id);
@@ -40,6 +41,7 @@ namespace UnitTests
         {
             // Arrange
             var mock = new Mock<IVacanciesService>();
+            var mockRepository = new Mock<IJobsRepository>();
             var outputMock = new Mock<IOutputPort>();
             var expectedMessage = string.Empty;
 
@@ -48,7 +50,7 @@ namespace UnitTests
                 .Callback<string>(s => expectedMessage = s);
 
             mock.Setup(r => r.GetVacancyById(id)).Returns(null);
-            IGetJobUseCase useCase = new GetJobUseCase(mock.Object);
+            IGetJobUseCase useCase = new GetJobUseCase(mock.Object, mockRepository.Object);
 
             useCase.SetOutputPort(outputMock.Object);
 
@@ -65,14 +67,15 @@ namespace UnitTests
         {
             // Arrange
             var mock = new Mock<IVacanciesService>();
+            var mockRepository = new Mock<IJobsRepository>();
             var outputMock = new Mock<IOutputPort>();
             var expectedMessage = string.Empty;
 
             outputMock.Setup(x => x.Ok(It.IsAny<string>(), It.IsAny<IJob>()))
                        .Callback<string, IJob>((s, e) => expectedMessage = s);
 
-            mock.Setup(r => r.GetVacancyById(id)).Returns(new ValueTask<IJob>(GetVacancy()));
-            IGetJobUseCase useCase = new GetJobUseCase(mock.Object);
+            mock.Setup(r => r.GetVacancyById(id)).Returns(new ValueTask<JobDto>(GetVacancy()));
+            IGetJobUseCase useCase = new GetJobUseCase(mock.Object, mockRepository.Object);
 
             useCase.SetOutputPort(outputMock.Object);
 

@@ -11,8 +11,23 @@ namespace Domain
     public interface IJobsRepository
     {
         /// <summary>
-        /// Добавить список вакансий
+        /// Получение вакансии по идентификатору
         /// </summary>
-        Task AddRange(IEnumerable<Job> jobList);
+        ValueTask<Job> GetJobById(int id);
+
+        /// <summary>
+        /// Получение количества вакансий из БД
+        /// </summary>
+        ValueTask<int> GetCount();
+
+        /// <summary>
+        /// Добавить вакансию
+        /// </summary>
+        Task AddJob(IJob job);
+
+        /// <summary>
+        /// Получение n первых вакансий из базы
+        /// </summary>
+        ValueTask<IEnumerable<Job>> GetJobsLimitN(int n);
     }
 }

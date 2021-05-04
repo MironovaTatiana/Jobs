@@ -22,10 +22,18 @@ namespace UnitTests
         {
             // Arrange
             var mock = new Mock<IVacanciesService>();
+            var mockRepository = new Mock<IJobsRepository>();
 
             mock.Setup(r => r.GetVacanciesList(count)).Returns(new ValueTask<IEnumerable<IJob>>(GetVacanciesList()));
 
-            IGetJobsListUseCase useCase = new GetJobsListUseCase(mock.Object);
+            mockRepository
+              .Setup(r => r.GetCount())
+              .Returns(new ValueTask<int>(count));
+            mockRepository
+              .Setup(r => r.GetJobsLimitN(count))
+              .Returns(new ValueTask<IEnumerable<Job>>(GetVacanciesList()));
+
+            IGetJobsListUseCase useCase = new GetJobsListUseCase(mock.Object, mockRepository.Object);
 
             // Act
             IEnumerable<IJob> result = await useCase.ExecuteAsync(count);
@@ -40,6 +48,7 @@ namespace UnitTests
         {
             // Arrange
             var mock = new Mock<IVacanciesService>();
+            var mockRepository = new Mock<IJobsRepository>();
             var outputMock = new Mock<IOutputPort>();
             var expectedMessage = string.Empty;
 
@@ -48,7 +57,7 @@ namespace UnitTests
                 .Callback<string>(s => expectedMessage = s);
 
             mock.Setup(r => r.GetVacanciesList(count)).Returns(new ValueTask<IEnumerable<IJob>>(GetVacanciesList()));
-            IGetJobsListUseCase useCase = new GetJobsListUseCase(mock.Object);
+            IGetJobsListUseCase useCase = new GetJobsListUseCase(mock.Object, mockRepository.Object);
 
             useCase.SetOutputPort(outputMock.Object);
 
@@ -65,6 +74,7 @@ namespace UnitTests
         {
             // Arrange
             var mock = new Mock<IVacanciesService>();
+            var mockRepository = new Mock<IJobsRepository>();
             var outputMock = new Mock<IOutputPort>();
             var expectedMessage = string.Empty;
 
@@ -72,7 +82,12 @@ namespace UnitTests
                        .Callback<string, IEnumerable<IJob>>((s, e) => expectedMessage = s);
 
             mock.Setup(r => r.GetVacanciesList(count)).Returns(new ValueTask<IEnumerable<IJob>>(GetVacanciesList()));
-            IGetJobsListUseCase useCase = new GetJobsListUseCase(mock.Object);
+            IGetJobsListUseCase useCase = new GetJobsListUseCase(mock.Object, mockRepository.Object);
+
+            mockRepository.Setup(r => r.GetCount())
+                          .Returns(new ValueTask<int>(count));
+            mockRepository.Setup(r => r.GetJobsLimitN(count))
+                          .Returns(new ValueTask<IEnumerable<Job>>(GetVacanciesList()));
 
             useCase.SetOutputPort(outputMock.Object);
 
@@ -86,13 +101,26 @@ namespace UnitTests
         /// <summary>
         /// Получение списка вакансий
         /// </summary>
-        private static IEnumerable<JobDto> GetVacanciesList()
+        private static IEnumerable<JobDto> GetVacanciesDtoList()
         {
             return new List<JobDto>()
             {
                 new JobDto {  Name = "Специалист по работе с клиентами", Id = 43904540, SalaryFrom = 1000, SalaryTo = 3000 },
                 new JobDto {  Name = "Менеджер по продажам", Id = 43904541, SalaryFrom = 1000, SalaryTo = 4000 },
                 new JobDto {  Name = "Аналитик", Id = 43904542, SalaryFrom = 1000, SalaryTo = 5000 },
+            };
+        }
+
+        /// <summary>
+        /// Получение списка вакансий
+        /// </summary>
+        private static IEnumerable<Job> GetVacanciesList()
+        {
+            return new List<Job>()
+            {
+                new Job {  Name = "Специалист по работе с клиентами", Id = 43904540, SalaryFrom = 1000, SalaryTo = 3000 },
+                new Job {  Name = "Менеджер по продажам", Id = 43904541, SalaryFrom = 1000, SalaryTo = 4000 },
+                new Job {  Name = "Аналитик", Id = 43904542, SalaryFrom = 1000, SalaryTo = 5000 },
             };
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Application.Dtos;
 using Domain;
 
 namespace Application.Services
@@ -17,6 +18,6 @@ namespace Application.Services
         /// <summary>
         /// Получение вакансии по идентификатору
         /// </summary>
-        ValueTask<IJob> GetVacancyById(int id);
+        ValueTask<JobDto> GetVacancyById(int id);
     }
 }

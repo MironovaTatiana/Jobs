@@ -17,6 +17,11 @@
         #region Поля
 
         /// <summary>
+        /// Репозиторий
+        /// </summary>
+        private readonly IJobsRepository _jobsRepository;
+
+        /// <summary>
         /// Сервис вакансий
         /// </summary>
         private readonly IVacanciesService _vacanciesService;
@@ -33,9 +38,10 @@
         /// <summary>
         /// Получение списка вакансий
         /// </summary>
-        public GetJobsListUseCase(IVacanciesService vacanciesService)
+        public GetJobsListUseCase(IVacanciesService vacanciesService, IJobsRepository jobsRepository)
         {
             _vacanciesService = vacanciesService;
+            _jobsRepository = jobsRepository;
         }
 
         #endregion
@@ -47,17 +53,35 @@
         /// </summary>
         public async ValueTask<IEnumerable<IJob>> ExecuteAsync(int count)
         {
-            IEnumerable<IJob> vacancies = await _vacanciesService.GetVacanciesList(count);
+            var countFromDb = this._jobsRepository.GetCount();
+            IEnumerable<JobDto> vacanciesDto = new List<JobDto>();
+
+            if (count > await countFromDb)
+            {
+                vacanciesDto = (IEnumerable<JobDto>)await _vacanciesService.GetVacanciesList(count);
+
+                var vacancies = JobDtoHelper.ConvertJobDtoListToJobList(vacanciesDto);
+
+                foreach (var vacancy in vacancies)
+                {
+                    await _jobsRepository.AddJob(vacancy).ConfigureAwait(false);
+                }
+            }
+
+            var vacanciesFromDb = await _jobsRepository.GetJobsLimitN(count);
+
+            vacanciesDto = JobDtoHelper.ConvertJobListToJobDtoList(vacanciesFromDb);
+
             var sortedVacancies = new List<JobDto>();
 
-            foreach (JobDto job in vacancies.OrderBy(w => w.Name))
+            foreach (JobDto job in vacanciesDto.OrderBy(w => w.Name))
             {
                 sortedVacancies.Add(job);
             }
 
-            if (vacancies.Count() == count)
+            if (vacanciesDto.Count() == count)
             {
-                this._outputPort?.Ok("Список вакансий получен", vacancies);
+                this._outputPort?.Ok("Список вакансий получен", vacanciesDto);
             }
             else
             {

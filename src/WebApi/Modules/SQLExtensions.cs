@@ -21,8 +21,8 @@
             services.AddDbContext<JobsContext>(
                 options => options.UseNpgsql(
                     configuration.GetValue<string>("ConnectionStrings:DefaultConnection")));
-
-            services.AddTransient<IJobsRepository, JobsRepository>();
+            
+            services.AddScoped<IJobsRepository, JobsRepository>();
 
             return services;
         }

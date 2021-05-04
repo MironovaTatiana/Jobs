@@ -17,7 +17,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using WebApi.Modules;
 using Microsoft.OpenApi.Models;
-using Application.UseCases.AddJobsList;
 using Application.UseCases.GetJobsList;
 using Application.Services;
 using Application.UseCases.GetJob;
@@ -62,7 +61,6 @@ namespace WebApi
 
            // services.AddHttpContextAccessor();
 
-            services.AddScoped<IAddJobsListUseCase, AddJobsListUseCase>();
             services.AddScoped<IGetJobsListUseCase, GetJobsListUseCase>();
             services.AddScoped<IGetJobUseCase, GetJobUseCase>();
             services.AddScoped<IVacanciesService, VacanciesService>();

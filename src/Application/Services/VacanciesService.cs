@@ -38,7 +38,7 @@ namespace Application.Services
         /// <summary>
         /// Получение детальной информации по конкретной вакансии по идентификатору
         /// </summary>
-        public async ValueTask<IJob> GetVacancyById(int id)
+        public async ValueTask<JobDto> GetVacancyById(int id)
         {
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("User-Agent", "d-fens HttpClient");

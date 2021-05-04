@@ -1,6 +1,7 @@
 ﻿namespace Application.UseCases.GetJob
 {
     using System.Threading.Tasks;
+    using Application.Dtos;
     using Application.Services;
     using Domain;
 
@@ -11,6 +12,11 @@
     public sealed class GetJobUseCase : IGetJobUseCase
     {
         #region Поля
+
+        /// <summary>
+        /// Репозиторий
+        /// </summary>
+        private readonly IJobsRepository _jobsRepository;
 
         /// <summary>
         /// Сервис вакансий
@@ -29,9 +35,10 @@
         /// <summary>
         /// Получение списка вакансий
         /// </summary>
-        public GetJobUseCase(IVacanciesService vacanciesService)
+        public GetJobUseCase(IVacanciesService vacanciesService, IJobsRepository jobsRepository)
         {
             _vacanciesService = vacanciesService;
+            _jobsRepository = jobsRepository;
         }
 
         #endregion
@@ -43,7 +50,17 @@
         /// </summary>
         public async ValueTask<IJob> ExecuteAsync(int id)
         {
-            var vacancy = await _vacanciesService.GetVacancyById(id);
+            var vacancy = new JobDto();
+            var jobFromBd = await this._jobsRepository.GetJobById(id).ConfigureAwait(false);
+
+            if (jobFromBd == null)
+            {
+                vacancy = await _vacanciesService.GetVacancyById(id);
+            }
+            else
+            {
+                vacancy = JobDtoHelper.ConvertJobToJobDto(jobFromBd);
+            }
             
             if (vacancy is not null)
             {

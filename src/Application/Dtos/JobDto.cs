@@ -9,6 +9,8 @@
     /// </summary>
     public class JobDto : IJob
     {
+        #region Свойства
+
         /// <summary>
         /// Идентификатор
         /// </summary>
@@ -53,5 +55,7 @@
         /// Тип занятости
         /// </summary>
         public string EmploymentType { get; set; }
+
+        #endregion
     }
 }

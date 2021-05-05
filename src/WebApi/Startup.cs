@@ -20,6 +20,7 @@ using Microsoft.OpenApi.Models;
 using Application.UseCases.GetJobsList;
 using Application.Services;
 using Application.UseCases.GetJob;
+using Infrastructure;
 
 namespace WebApi
 {
@@ -64,6 +65,8 @@ namespace WebApi
             services.AddScoped<IGetJobsListUseCase, GetJobsListUseCase>();
             services.AddScoped<IGetJobUseCase, GetJobUseCase>();
             services.AddScoped<IVacanciesService, VacanciesService>();
+
+            services.Configure<Config>(Configuration.GetSection(nameof(Config)));
 
             services.AddMvc();
             services.AddSwaggerGen(c =>

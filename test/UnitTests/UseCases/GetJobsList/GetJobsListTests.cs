@@ -56,7 +56,7 @@ namespace UnitTests
                 .Setup(x => x.Fail(It.IsAny<string>()))
                 .Callback<string>(s => expectedMessage = s);
 
-            mock.Setup(r => r.GetVacanciesList(count)).Returns(new ValueTask<IEnumerable<IJob>>(GetVacanciesList()));
+            mock.Setup(r => r.GetVacanciesList(count)).Returns(new ValueTask<IEnumerable<IJob>>(GetVacanciesDtoList()));
             IGetJobsListUseCase useCase = new GetJobsListUseCase(mock.Object, mockRepository.Object);
 
             useCase.SetOutputPort(outputMock.Object);
@@ -81,7 +81,7 @@ namespace UnitTests
             outputMock.Setup(x => x.Ok(It.IsAny<string>(), It.IsAny<IEnumerable<IJob>>()))
                        .Callback<string, IEnumerable<IJob>>((s, e) => expectedMessage = s);
 
-            mock.Setup(r => r.GetVacanciesList(count)).Returns(new ValueTask<IEnumerable<IJob>>(GetVacanciesList()));
+            mock.Setup(r => r.GetVacanciesList(count)).Returns(new ValueTask<IEnumerable<IJob>>(GetVacanciesDtoList()));
             IGetJobsListUseCase useCase = new GetJobsListUseCase(mock.Object, mockRepository.Object);
 
             mockRepository.Setup(r => r.GetCount())

@@ -3,20 +3,50 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Application.Dtos;
 using Domain;
+using Infrastructure;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace Application.Services
 {
+    /// <summary>
+    /// Сервис для получения вакансий
+    /// </summary>
     public class VacanciesService : IVacanciesService
     {
+        #region Поля
+
+        /// <summary>
+        /// Конфигурация
+        /// </summary>
+        public Config Config { get; }
+
+        #endregion
+
+        #region Конструктор
+
+        /// <summary>
+        /// Сервис для получения вакансий
+        /// </summary>
+        public VacanciesService(IOptions<Config> options)
+        {
+            Config = options.Value;
+        }
+
+        #endregion
+
+        #region Методы
+
         /// <summary>
         /// Получение списка вакансий
         /// </summary>
         public async ValueTask<IEnumerable<IJob>> GetVacanciesList(int count)
         {
             HttpClient httpClient = new ();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "d-fens HttpClient");
-            var request = $"https://api.hh.ru/vacancies/?per_page={count}&only_with_salary=true";
+            httpClient.DefaultRequestHeaders.Add(Config.HeaderKey, Config.HeaderValue);
+            var request = Config.RequestVacanciesByCount?.Replace("{count}", count.ToString()); 
             HttpResponseMessage response =
                 (await httpClient.GetAsync(request)).EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
@@ -41,8 +71,8 @@ namespace Application.Services
         public async ValueTask<JobDto> GetVacancyById(int id)
         {
             var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "d-fens HttpClient");
-            var request = $"https://api.hh.ru/vacancies/{id}";
+            httpClient.DefaultRequestHeaders.Add(Config.HeaderKey, Config.HeaderValue);
+            var request = Config.RequestVacancyById?.Replace("{id}",id.ToString());
             HttpResponseMessage response =
                 (await httpClient.GetAsync(request)).EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
@@ -111,5 +141,7 @@ namespace Application.Services
                 return null;
             }
         }
+
+        #endregion
     }
 }

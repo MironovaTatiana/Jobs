@@ -57,7 +57,7 @@ namespace WebApi
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSQLServer(this.Configuration);
+            services.DataBaseConnectionConfiguration(this.Configuration);
             services.AddControllers();
 
            // services.AddHttpContextAccessor();
@@ -66,7 +66,7 @@ namespace WebApi
             services.AddScoped<IGetJobUseCase, GetJobUseCase>();
             services.AddScoped<IVacanciesService, VacanciesService>();
 
-            services.Configure<Config>(Configuration.GetSection(nameof(Config)));
+            services.Configure<HhRuConfig>(Configuration.GetSection(nameof(HhRuConfig)));
 
             services.AddMvc();
             services.AddSwaggerGen(c =>

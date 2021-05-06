@@ -13,7 +13,7 @@ namespace Application.UseCases.GetJobsList
         /// <summary>
         /// Выполнение
         /// </summary>
-        ValueTask<IEnumerable<IJob>> ExecuteAsync(int count);
+        Task<IEnumerable<IJob>> ExecuteAsync(int count);
 
         /// <summary>
         /// Установка выходного порта

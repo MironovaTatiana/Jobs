@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using System;
 
 namespace Application.Services
 {
@@ -21,7 +22,12 @@ namespace Application.Services
         /// <summary>
         /// Конфигурация
         /// </summary>
-        public Config Config { get; }
+        private readonly HhRuConfig _config;
+
+        /// <summary>
+        /// Http-клиент
+        /// </summary>
+        private readonly HttpClient _httpClient;
 
         #endregion
 
@@ -30,9 +36,11 @@ namespace Application.Services
         /// <summary>
         /// Сервис для получения вакансий
         /// </summary>
-        public VacanciesService(IOptions<Config> options)
+        public VacanciesService(IOptions<HhRuConfig> options)
         {
-            Config = options.Value;
+            _config = options.Value;
+            _httpClient = new();
+            _httpClient.DefaultRequestHeaders.Add(_config.HeaderKey, _config.HeaderValue);
         }
 
         #endregion
@@ -42,43 +50,53 @@ namespace Application.Services
         /// <summary>
         /// Получение списка вакансий
         /// </summary>
-        public async ValueTask<IEnumerable<IJob>> GetVacanciesList(int count)
+        public async ValueTask<IEnumerable<IJob>> GetVacanciesListAsync(int count)
         {
-            HttpClient httpClient = new ();
-            httpClient.DefaultRequestHeaders.Add(Config.HeaderKey, Config.HeaderValue);
-            var request = Config.RequestVacanciesByCount?.Replace("{count}", count.ToString()); 
-            HttpResponseMessage response =
-                (await httpClient.GetAsync(request)).EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-
-            var jobs = new List<JobDto>();
-            var responseJson = TryLoadJson(responseBody);
-
-            foreach (var itm in responseJson)
+            try
             {
-                foreach (var child in itm.Value.Children())
-                {
-                    jobs.Add(ParseToken(child));
-                }
-            }
+                var request = _config.RequestVacanciesByCount?.Replace("{count}", count.ToString());
+                HttpResponseMessage response =
+                    (await _httpClient.GetAsync(request)).EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
 
-            return jobs;
+                var jobs = new List<JobDto>();
+                var responseJson = TryLoadJson(responseBody);
+
+                foreach (var itm in responseJson)
+                {
+                    foreach (var child in itm.Value.Children())
+                    {
+                        jobs.Add(ParseToken(child));
+                    }
+                }
+
+                return jobs;
+            }
+            catch
+            {
+                throw new HttpRequestException();
+            }
         }
 
         /// <summary>
         /// Получение детальной информации по конкретной вакансии по идентификатору
         /// </summary>
-        public async ValueTask<JobDto> GetVacancyById(int id)
+        public async ValueTask<JobDto> GetVacancyByIdAsync(int id)
         {
-            var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add(Config.HeaderKey, Config.HeaderValue);
-            var request = Config.RequestVacancyById?.Replace("{id}",id.ToString());
-            HttpResponseMessage response =
-                (await httpClient.GetAsync(request)).EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-            var responseJson = TryLoadJson(responseBody);
+            try
+            {
+                var request = _config.RequestVacancyById?.Replace("{id}", id.ToString());
+                HttpResponseMessage response =
+                    (await _httpClient.GetAsync(request)).EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var responseJson = TryLoadJson(responseBody);
 
-            return ParseToken(responseJson);
+                return ParseToken(responseJson);
+            }
+            catch
+            {
+                throw new HttpRequestException();
+            }
         }
 
         /// <summary>

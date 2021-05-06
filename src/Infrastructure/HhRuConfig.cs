@@ -5,36 +5,45 @@ using Microsoft.Extensions.Configuration;
 namespace Infrastructure
 {
     /// <summary>
-    /// Класс конфигурации
+    /// Класс конфигурации для работы с HH.ru
     /// </summary>
-    public class Config
+    public class HhRuConfig
     {
-        #region Свойства
+        #region Константы
 
         /// <summary>
-        /// Секция запросов
+        /// Название секции
         /// </summary>
-        IConfigurationSection Requests { get; set; }
+        public const string Requests = "Requests";
+
+        #endregion
+
+        #region Свойства
 
         /// <summary>
         /// Запрос для получения вакансий
         /// </summary>
-        public string RequestVacanciesByCount => Requests.GetSection("RequestVacanciesByCount")?.Value;
+        public string RequestVacancies { get; set; }
+
+        /// <summary>
+        /// Запрос для получения N вакансий
+        /// </summary>
+        public string RequestVacanciesByCount { get; set; }
 
         /// <summary>
         /// Запрос для получения вакансии по идентификатору
         /// </summary>
-        public string RequestVacancyById => Requests.GetSection("RequestVacancyById")?.Value;
+        public string RequestVacancyById { get; set; }
 
         /// <summary>
         /// Ключ заголовка
         /// </summary>
-        public string HeaderKey => Requests.GetSection("HeaderKey")?.Value;
+        public string HeaderKey { get; set; }
 
         /// <summary>
         /// Заголовок
         /// </summary>
-        public string HeaderValue => Requests.GetSection("HeaderValue")?.Value;
+        public string HeaderValue { get; set; }
 
         #endregion
 
@@ -43,13 +52,14 @@ namespace Infrastructure
         /// <summary>
         /// Класс конфигурации
         /// </summary>
-        public Config()
+        public HhRuConfig()
         {
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(Path.Combine(Directory.GetCurrentDirectory()))
                 .AddJsonFile("appsettings.json", false)
                 .Build();
-            Requests = configuration.GetSection("Requests");
+
+            configuration.GetSection(Requests).Bind(this);
         }
 
         #endregion

@@ -9,12 +9,12 @@
     /// <summary>
     /// Класс, содержащий специальные методы расширения для IServiceCollection
     /// </summary>
-    public static class SQLExtensions
+    public static class PostgreSQLExtensions
     {
         /// <summary>
-        /// Добавление SQL соединения
+        /// Конфигурация сервисов соединения к БД
         /// </summary>
-        public static IServiceCollection AddSQLServer(
+        public static IServiceCollection DataBaseConnectionConfiguration(
             this IServiceCollection services,
             IConfiguration configuration)
         {

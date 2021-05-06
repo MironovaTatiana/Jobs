@@ -51,41 +51,62 @@
         /// <summary>
         /// Получение списка вакансий
         /// </summary>
-        public async ValueTask<IEnumerable<IJob>> ExecuteAsync(int count)
+        public async Task<IEnumerable<IJob>> ExecuteAsync(int count)
         {
-            var countFromDb = this._jobsRepository.GetCount();
+            var countFromDb = this._jobsRepository.GetCountAsync();
             IEnumerable<JobDto> vacanciesDto = new List<JobDto>();
 
             if (count > await countFromDb)
             {
-                vacanciesDto = (IEnumerable<JobDto>)await _vacanciesService.GetVacanciesList(count);
-
-                var vacancies = JobDtoHelper.ConvertJobDtoListToJobList(vacanciesDto);
-
-                foreach (var vacancy in vacancies)
+                try
                 {
-                    await _jobsRepository.AddJob(vacancy).ConfigureAwait(false);
+                    //Берем вакансии из API
+                    vacanciesDto = (IEnumerable<JobDto>)await _vacanciesService.GetVacanciesListAsync(count);
+
+                    var vacancies = vacanciesDto.ConvertJobDtoListToJobList();
+
+                    foreach (var vacancy in vacancies)
+                    {
+                        await _jobsRepository.AddJobAsync(vacancy).ConfigureAwait(false);
+                    }
+
+                    if (vacanciesDto.Count() == count)
+                    {
+                        this._outputPort?.Ok("Список вакансий получен с сайта", vacanciesDto);
+                    }
+                    else
+                    {
+                        this._outputPort?.Fail("Возникла ошибка во время получения списка вакансий с сайта");
+                    }
+                }
+                catch
+                {
+                    this._outputPort?.Fail("Отсутствует интернет-соединение");
+                    throw new JobsException("Отсутствует интернет-соединение");
                 }
             }
+            else
+            {
+                //Берем вакансии из БД
+                var vacanciesFromDb = await _jobsRepository.GetJobsLimitNAsync(count);
 
-            var vacanciesFromDb = await _jobsRepository.GetJobsLimitN(count);
+                vacanciesDto = vacanciesFromDb.ConvertJobListToJobDtoList();
 
-            vacanciesDto = JobDtoHelper.ConvertJobListToJobDtoList(vacanciesFromDb);
+                if (vacanciesDto.Count() == count)
+                {
+                    this._outputPort?.Ok("Список вакансий получен из БД", vacanciesDto);
+                }
+                else
+                {
+                    this._outputPort?.Fail("Возникла ошибка во время получения списка вакансий из БД");
+                }
+            }
 
             var sortedVacancies = new List<JobDto>();
 
             foreach (JobDto job in vacanciesDto.OrderBy(w => w.Name))
             {
                 sortedVacancies.Add(job);
-            }
-
-            if (vacanciesDto.Count() == count)
-            {
-                this._outputPort?.Ok("Список вакансий получен", vacanciesDto);
-            }
-            else
-            {
-                this._outputPort?.Fail("Возникла ошибка во время получения списка вакансий");
             }
 
             return sortedVacancies;

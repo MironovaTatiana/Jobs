@@ -2,23 +2,22 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using Domain;
 
     /// <summary>
-    /// Класс для работы с JobDto
+    /// Класс с методами расширения для JobDto
     /// </summary>
-    public static class JobDtoHelper
+    public static class JobDtoExtensions
     {
         #region Методы
 
         /// <summary>
         /// Преобразование списка JobDto в Job
         /// </summary>
-        public static IEnumerable<Job> ConvertJobDtoListToJobList(IEnumerable<JobDto> vacanciesDto)
+        public static IEnumerable<Job> ConvertJobDtoListToJobList(this IEnumerable<JobDto> vacanciesDto)
         {
-            var vacancies = vacanciesDto.Select(x => new Job
+            IEnumerable<Job> vacancies = vacanciesDto.Select(x => new Job
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -37,9 +36,9 @@
         /// <summary>
         /// Преобразование списка Job в JobDto
         /// </summary>
-        public static IEnumerable<JobDto> ConvertJobListToJobDtoList(IEnumerable<Job> vacancies)
+        public static IEnumerable<JobDto> ConvertJobListToJobDtoList(this IEnumerable<Job> vacancies)
         {
-            var vacanciesDto = vacancies.Select(x => new JobDto
+            IEnumerable<JobDto> vacanciesDto = vacancies.Select(x => new JobDto
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -58,9 +57,9 @@
         /// <summary>
         /// Преобразование Job в JobDto
         /// </summary>
-        public static JobDto ConvertJobToJobDto(Job vacancy)
+        public static JobDto ConvertJobToJobDto(this Job vacancy)
         {
-            var vacancyDto = new JobDto
+            JobDto vacancyDto = new JobDto
             {
                 Id = vacancy.Id,
                 Name = vacancy.Name,

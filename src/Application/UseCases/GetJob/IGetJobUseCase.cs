@@ -11,7 +11,7 @@ namespace Application.UseCases.GetJob
         /// <summary>
         /// Выполнение
         /// </summary>
-        ValueTask<IJob> ExecuteAsync(int id);
+        Task<IJob> ExecuteAsync(int id);
 
         /// <summary>
         /// Установка выходного порта

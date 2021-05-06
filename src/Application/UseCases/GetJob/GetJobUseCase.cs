@@ -48,30 +48,37 @@
         /// <summary>
         /// Получение вакансии по идентификатору
         /// </summary>
-        public async ValueTask<IJob> ExecuteAsync(int id)
+        public async Task<IJob> ExecuteAsync(int id)
         {
             var vacancy = new JobDto();
-            var jobFromBd = await this._jobsRepository.GetJobById(id).ConfigureAwait(false);
+            var jobFromBd = await this._jobsRepository.GetJobByIdAsync(id).ConfigureAwait(false);
 
-            if (jobFromBd == null)
+            try
             {
-                vacancy = await _vacanciesService.GetVacancyById(id);
-            }
-            else
-            {
-                vacancy = JobDtoHelper.ConvertJobToJobDto(jobFromBd);
-            }
-            
-            if (vacancy is not null)
-            {
-                this._outputPort?.Ok("Вакансия получена", vacancy);
-            }
-            else
-            {
-                this._outputPort?.Fail("Возникла ошибка во время получения вакансии");
-            }
+                if (jobFromBd == null)
+                {
+                    vacancy = await _vacanciesService.GetVacancyByIdAsync(id);
+                }
+                else
+                {
+                    vacancy = jobFromBd.ConvertJobToJobDto();
+                }
 
-            return vacancy;
+                if (vacancy is not null)
+                {
+                    this._outputPort?.Ok("Вакансия получена", vacancy);
+                }
+                else
+                {
+                    this._outputPort?.Fail("Возникла ошибка во время получения вакансии");
+                }
+
+                return vacancy;
+            }
+            catch 
+            {
+                throw new JobsException("Отсутствует интернет-соединение");
+            }
         }
 
         /// <summary>

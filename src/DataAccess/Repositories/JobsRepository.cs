@@ -38,9 +38,9 @@ namespace DataAccess
         /// <summary>
         /// Добавление вакансии
         /// </summary>
-        public async Task AddJob(IJob job)
+        public async Task AddJobAsync(IJob job)
         {
-            var jobFromBd = await GetJobById(job.Id);
+            var jobFromBd = await GetJobByIdAsync(job.Id);
 
             if (jobFromBd == null)
             {
@@ -53,9 +53,9 @@ namespace DataAccess
         /// <summary>
         /// Получение вакансии по идентификатору
         /// </summary>
-        public async ValueTask<Job> GetJobById(int id)
+        public async ValueTask<Job> GetJobByIdAsync(int id)
         {
-            if ((int)_context.JobsList?.Count() > 0)
+            if (_context.JobsList.Count() > 0)
             {
                 Job job = await _context
                 .JobsList
@@ -64,9 +64,9 @@ namespace DataAccess
                 .SingleOrDefaultAsync()
                 .ConfigureAwait(false);
 
-                if (job is Job findJob)
+                if (job != null)
                 {
-                    return findJob;
+                    return job;
                 }
             }
 
@@ -76,11 +76,11 @@ namespace DataAccess
         /// <summary>
         /// Получение n первых вакансий из базы
         /// </summary>
-        public async ValueTask<IEnumerable<Job>> GetJobsLimitN(int n)
+        public async ValueTask<IEnumerable<Job>> GetJobsLimitNAsync(int n)
         {
             var jobs = new List<Job>();
 
-            if ((int)_context.JobsList?.Count() >= n)
+            if (_context.JobsList.Count() >= n)
             {
                 var jobsFromDb = _context.JobsList.FromSqlRaw($"SELECT * FROM public.\"JobsList\" LIMIT @p0", n).ToList();
 
@@ -96,9 +96,9 @@ namespace DataAccess
         /// <summary>
         /// Получение количества вакансий из БД
         /// </summary>
-        public async ValueTask<int> GetCount()
+        public async ValueTask<int> GetCountAsync()
         {
-            int count = (int)(_context.JobsList?.Count());
+            int count = _context.JobsList.Count();
 
             return await new ValueTask<int>(count);
         }

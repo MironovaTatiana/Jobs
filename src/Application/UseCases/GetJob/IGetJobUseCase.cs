@@ -1,18 +1,17 @@
-namespace Application.UseCases.AddJobsList
+namespace Application.UseCases.GetJob
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Application.Dtos;
+    using Domain;
 
     /// <summary>
-    /// Интерфейс для добавления вакансий
+    /// Интерфейс для получения вакансии по идентификатору
     /// </summary>
-    public interface IAddJobsListUseCase
+    public interface IGetJobUseCase
     {
         /// <summary>
         /// Выполнение
         /// </summary>
-        Task ExecuteAsync(IEnumerable<JobDto> jobsList);
+        Task<IJob> ExecuteAsync(int id);
 
         /// <summary>
         /// Установка выходного порта
@@ -20,5 +19,4 @@ namespace Application.UseCases.AddJobsList
         /// <param name="outputPort"></param>
         void SetOutputPort(IOutputPort outputPort);
     }
-
 }

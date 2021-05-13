@@ -1,4 +1,4 @@
-namespace Application.UseCases.DeleteJobsList
+﻿namespace Application.UseCases.DeleteJobsList
 {
     using System;
     using System.Collections.Generic;

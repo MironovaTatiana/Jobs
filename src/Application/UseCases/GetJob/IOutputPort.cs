@@ -1,4 +1,4 @@
-namespace Application.UseCases.AddJobsList
+namespace Application.UseCases.GetJob
 {
     using System.Collections.Generic;
     using Domain;
@@ -16,6 +16,6 @@ namespace Application.UseCases.AddJobsList
         /// <summary>
         /// Успешно
         /// </summary>
-        void Ok(string message, IEnumerable<IJob> jobsList);
+        void Ok(string message, IJob job);
     }
 }

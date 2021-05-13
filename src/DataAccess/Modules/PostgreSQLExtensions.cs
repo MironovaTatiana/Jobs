@@ -1,28 +1,27 @@
-namespace WebApi.Modules
+п»їnamespace DataAccess.Modules
 {
-    using DataAccess;
     using Domain;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
-    /// Класс, содержащий специальные методы расширения для IServiceCollection
+    /// РљР»Р°СЃСЃ, СЃРѕРґРµСЂР¶Р°С‰РёР№ СЃРїРµС†РёР°Р»СЊРЅС‹Рµ РјРµС‚РѕРґС‹ СЂР°СЃС€РёСЂРµРЅРёСЏ РґР»СЏ IServiceCollection
     /// </summary>
-    public static class SQLExtensions
+    public static class PostgreSQLExtensions
     {
         /// <summary>
-        /// Добавление SQL соединения
+        /// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ СЃРµСЂРІРёСЃРѕРІ СЃРѕРµРґРёРЅРµРЅРёСЏ Рє Р‘Р”
         /// </summary>
-        public static IServiceCollection AddSQLServer(
+        public static IServiceCollection DataBaseConnectionConfiguration(
             this IServiceCollection services,
             IConfiguration configuration)
         {
             services.AddDbContext<JobsContext>(
                 options => options.UseNpgsql(
                     configuration.GetValue<string>("ConnectionStrings:DefaultConnection")));
-
-            services.AddTransient<IJobsRepository, JobsRepository>();
+            
+            services.AddScoped<IJobsRepository, JobsRepository>();
 
             return services;
         }

@@ -1,12 +1,12 @@
 ﻿using System;
-
+using System.Net.Http;
 
 namespace Application
 {
     /// <summary>
     /// Custom Exception
     /// </summary>
-    public class JobsException : ArgumentException
+    public class JobsException : HttpRequestException
     {
         /// <summary>
         /// Custom Exception

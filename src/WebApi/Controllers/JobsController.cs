@@ -1,21 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Application.Dtos;
-using Application.UseCases.AddJobsList;
+using Application.UseCases.GetJobsList;
+using Application.UseCases.GetJob;
 using Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using GetJobsList = Application.UseCases.GetJobsList;
+using GetJob = Application.UseCases.GetJob;
 
 namespace WebApi.Controllers
 {
     /// <summary>
-    /// Контроллер для добавления вакансий
+    /// Контроллер для получения вакансий
     /// </summary>
     [ApiController]
-    [Route("api/[controller]")]
-    public class JobsController : ControllerBase, IOutputPort
+    [Route("[controller]")]
+    public class JobsController : ControllerBase, GetJobsList.IOutputPort, GetJob.IOutputPort
     {
         #region Поля
 
@@ -24,44 +25,46 @@ namespace WebApi.Controllers
         /// </summary>
         private IActionResult _result;
 
-        /// <summary>
-        /// Поле для добавления вакансий
-        /// </summary>
-        private readonly IAddJobsListUseCase _useCase;
-
-        #endregion
-
-        #region Конструктор
-
-        /// <summary>
-        /// Контроллер для добавления вакансий
-        /// </summary>
-        public JobsController(IAddJobsListUseCase useCase) 
-        {
-            this._useCase = useCase;
-        }
-
-        #endregion
+        #endregion     
 
         #region Запросы
 
         /// <summary>
-        /// Добавление вакансий
+        /// Получение списка вакансий
         /// </summary>
-        [HttpPost]
+        [HttpGet(Name = "GetJobsList")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Post(
-            [FromBody][BindRequired] List<JobDto> jobsList)
+        public async Task<IEnumerable<IJob>> Get(
+            [FromServices] IGetJobsListUseCase useCase,
+            [FromQuery][Required] int count)
         {
-            _useCase.SetOutputPort(this);
-            await _useCase.ExecuteAsync(jobsList)
+            useCase.SetOutputPort(this);
+            return await useCase.ExecuteAsync(count)
                 .ConfigureAwait(false);
-
-            return this.Ok(); 
-            //this._result;
         }
+
+        /// <summary>
+        /// Получение вакансии по идентификатору
+        /// </summary>
+        [HttpGet("{jobId}", Name = "GetJob")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IJob> Get(
+            [FromServices] IGetJobUseCase useCase,
+            [FromRoute][Required] int jobId)
+        {
+            useCase.SetOutputPort(this);
+
+            return await useCase.ExecuteAsync(jobId)
+                .ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Реализация портов
 
         /// <summary>
         /// Неудача
@@ -74,6 +77,12 @@ namespace WebApi.Controllers
         /// </summary>
         [ApiExplorerSettings(IgnoreApi = true)]
         public void Ok(string s, IEnumerable<IJob> jobsList) => this._result = this.Ok();
+
+        /// <summary>
+        /// Успешно
+        /// </summary>
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public void Ok(string s, IJob job) => this._result = this.Ok();
 
         #endregion
     }

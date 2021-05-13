@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+п»їusing System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Services;
@@ -6,94 +6,155 @@ using Application.UseCases.GetJobsList;
 using Domain;
 using Moq;
 using NUnit.Framework;
-using Application.Dtos;
+using Application;
+using System;
+using UnitTests.UseCases;
 
 namespace UnitTests
 {
     /// <summary>
-    /// Класс для тестирования получения списка вакансий
+    /// РљР»Р°СЃСЃ РґР»СЏ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ РїРѕР»СѓС‡РµРЅРёСЏ СЃРїРёСЃРєР° РІР°РєР°РЅСЃРёР№
     /// </summary>
     [TestFixture(TestOf = typeof(GetJobsListUseCase))]
     public class GetJobsListTests
     {
-        [Test(Description = "Тест выполняет сравнение количества полученных вакансий и переданного параметра")]
+        [Test(Description = "РўРµСЃС‚ РІС‹РїРѕР»РЅСЏРµС‚ РїРѕРїС‹С‚РєСѓ РїРѕР»СѓС‡РµРЅРёСЏ РІР°РєР°РЅСЃРёР№ СЃ СЃР°Р№С‚Р°, С‚Р°Рє РєР°Рє РїР°СЂР°РјРµС‚СЂ Р·Р°РїСЂРѕСЃР° Р±РѕР»СЊС€Рµ С‡РёСЃР»Р° Р·Р°РїРёСЃРµР№ РІ Р‘Р”, " +
+            "СЃ РЅРµР°РєС‚РёРІРЅС‹Рј РёРЅС‚РµСЂРЅРµС‚РѕРј Рё РѕР¶РёРґР°РµС‚ РѕС€РёР±РєСѓ")]
+        [TestCase(4)]
         [TestCase(3)]
-        public async Task ExecuteAsync_CompareJobsCountAndParametrValue(int count)
+        [TestCase(2)]
+        public Task ExecuteAsync_GetJobsFromApiWithoutInternetConnectionThrowsException(int count)
         {
             // Arrange
-            var mock = new Mock<IVacanciesService>();
+            var mockService = new Mock<IVacanciesService>();
+            var mockRepository = new Mock<IJobsRepository>();
 
-            mock.Setup(r => r.GetVacanciesList(count)).Returns(new ValueTask<IEnumerable<IJob>>(GetVacanciesList()));
+            mockService
+                .Setup(r => r.GetVacanciesListAsync(count))
+                .Throws(new JobsException("РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РёРЅС‚РµСЂРЅРµС‚-СЃРѕРµРґРёРЅРµРЅРёРµ"));
 
-            IGetJobsListUseCase useCase = new GetJobsListUseCase(mock.Object);
+            mockRepository
+              .Setup(r => r.GetCountAsync())
+              .Returns(new ValueTask<int>(count - 1));
+
+            IGetJobsListUseCase useCase = new GetJobsListUseCase(mockService.Object, mockRepository.Object);
 
             // Act
-            IEnumerable<IJob> result = await useCase.ExecuteAsync(count);
+            AsyncTestDelegate result = ()=> useCase.ExecuteAsync(count);
 
             // Assert
-            Assert.AreEqual(count, result.Count());
+            Assert.ThrowsAsync<JobsException>(result);
+
+            return Task.CompletedTask;
         }
 
-        [Test(Description = "Тест выполняет сравнение количества полученных вакансий и переданного параметра и ожидает сообщение об отрицательном результате")]
-        [TestCase(2)]
-        public async Task ExecuteAsync_CompareJobsCountAndParametrValueReturnFail(int count)
+        [Test(Description = "РўРµСЃС‚ РІС‹РїРѕР»РЅСЏРµС‚ РїРѕР»СѓС‡РµРЅРёРµ РІР°РєР°РЅСЃРёР№ РёР· Р‘Р”, С‚Р°Рє РєР°Рє РїР°СЂР°РјРµС‚СЂ Р·Р°РїСЂРѕСЃР° РјРµРЅСЊС€Рµ РёР»Рё СЂР°РІРµРЅ С‡РёСЃР»Сѓ Р·Р°РїРёСЃРµР№ РІ Р‘Р”, " +
+            "СЃ РЅРµР°РєС‚РёРІРЅС‹Рј РёРЅС‚РµСЂРЅРµС‚РѕРј Рё РѕР¶РёРґР°РµС‚ СЃРѕРѕР±С‰РµРЅРёРµ Рѕ РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕРј СЂРµР·СѓР»СЊС‚Р°С‚Рµ")]
+        public async Task ExecuteAsync_GetJobsFromDataBaseWithoutInternetConnectionThrowsOk()
         {
             // Arrange
-            var mock = new Mock<IVacanciesService>();
+            var count = 3;
+            var mockService = new Mock<IVacanciesService>();
+            var mockRepository = new Mock<IJobsRepository>();
             var outputMock = new Mock<IOutputPort>();
             var expectedMessage = string.Empty;
+
+            mockService
+                .Setup(r => r.GetVacanciesListAsync(count))
+                .Throws(new JobsException("РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РёРЅС‚РµСЂРЅРµС‚-СЃРѕРµРґРёРЅРµРЅРёРµ"));
+
+            mockRepository
+                .Setup(r => r.GetCountAsync())
+                .Returns(new ValueTask<int>(count));
+
+            mockRepository
+                .Setup(r => r.GetJobsLimitNAsync(count))
+                .Returns(new ValueTask<IEnumerable<Job>>(TestData.GetVacanciesList()));
 
             outputMock
-                .Setup(x => x.Fail(It.IsAny<string>()))
-                .Callback<string>(s => expectedMessage = s);
+                .Setup(x => x.Ok(It.IsAny<string>(), It.IsAny<IEnumerable<IJob>>()))
+                .Callback<string, IEnumerable<IJob>>((s, e) => expectedMessage = s);
 
-            mock.Setup(r => r.GetVacanciesList(count)).Returns(new ValueTask<IEnumerable<IJob>>(GetVacanciesList()));
-            IGetJobsListUseCase useCase = new GetJobsListUseCase(mock.Object);
-
+            IGetJobsListUseCase useCase = new GetJobsListUseCase(mockService.Object, mockRepository.Object);
             useCase.SetOutputPort(outputMock.Object);
 
             // Act
             await useCase.ExecuteAsync(count);
 
             // Assert
-            Assert.AreEqual("Возникла ошибка во время получения списка вакансий", expectedMessage);
+            Assert.AreEqual("РЎРїРёСЃРѕРє РІР°РєР°РЅСЃРёР№ РїРѕР»СѓС‡РµРЅ РёР· Р‘Р”", expectedMessage);
         }
 
-        [Test(Description = "Тест выполняет сравнение количества полученных вакансий и переданного параметра и ожидает сообщение о положительном результате")]
-        [TestCase(3)]
-        public async Task ExecuteAsync_CompareJobsCountAndParametrValueReturnOk(int count)
+        [Test(Description = "РўРµСЃС‚ РІС‹РїРѕР»РЅСЏРµС‚ РїРѕР»СѓС‡РµРЅРёРµ РІР°РєР°РЅСЃРёР№ РёР· Р‘Р”, С‚Р°Рє РєР°Рє РїР°СЂР°РјРµС‚СЂ Р·Р°РїСЂРѕСЃР° РјРµРЅСЊС€Рµ РёР»Рё СЂР°РІРµРЅ С‡РёСЃР»Сѓ Р·Р°РїРёСЃРµР№ РІ Р‘Р”, " +
+            "СЃ Р°РєС‚РёРІРЅС‹Рј РёРЅС‚РµСЂРЅРµС‚РѕРј Рё РѕР¶РёРґР°РµС‚ СЃРѕРѕР±С‰РµРЅРёРµ Рѕ РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕРј СЂРµР·СѓР»СЊС‚Р°С‚Рµ Рё РѕР¶РёРґР°РµС‚СЃСЏ С‡С‚Рѕ С‡РёСЃР»Рѕ Р·Р°РїРёСЃРµР№ РІ Р‘Р” РґРѕ Рё РїРѕСЃР»Рµ Р±СѓРґРµС‚ РѕРґРёРЅР°РєРѕРІС‹Рј")]
+        public async Task ExecuteAsync_GetJobsFromDataBaseWithInternetConnectionThrowsOk()
         {
             // Arrange
-            var mock = new Mock<IVacanciesService>();
+            var count = 3;
+            var mockService = new Mock<IVacanciesService>();
+            var mockRepository = new Mock<IJobsRepository>();
             var outputMock = new Mock<IOutputPort>();
             var expectedMessage = string.Empty;
 
-            outputMock.Setup(x => x.Ok(It.IsAny<string>(), It.IsAny<IEnumerable<IJob>>()))
-                       .Callback<string, IEnumerable<IJob>>((s, e) => expectedMessage = s);
+            mockService
+                .Setup(r => r.GetVacanciesListAsync(count))
+                .Returns(new ValueTask<IEnumerable<IJob>>(TestData.GetVacanciesDtoList())); 
 
-            mock.Setup(r => r.GetVacanciesList(count)).Returns(new ValueTask<IEnumerable<IJob>>(GetVacanciesList()));
-            IGetJobsListUseCase useCase = new GetJobsListUseCase(mock.Object);
+            mockRepository
+                .Setup(r => r.GetCountAsync())
+                .Returns(new ValueTask<int>(count));
 
+            mockRepository
+                .Setup(r => r.GetJobsLimitNAsync(count))
+                .Returns(new ValueTask<IEnumerable<Job>>(TestData.GetVacanciesList()));
+
+            outputMock
+                .Setup(x => x.Ok(It.IsAny<string>(), It.IsAny<IEnumerable<IJob>>()))
+                .Callback<string, IEnumerable<IJob>>((s, e) => expectedMessage = s);
+
+            IGetJobsListUseCase useCase = new GetJobsListUseCase(mockService.Object, mockRepository.Object);
+            useCase.SetOutputPort(outputMock.Object);
+
+            // Act
+            var jobs = await useCase.ExecuteAsync(count);
+
+            // Assert
+            Assert.AreEqual("РЎРїРёСЃРѕРє РІР°РєР°РЅСЃРёР№ РїРѕР»СѓС‡РµРЅ РёР· Р‘Р”", expectedMessage);
+            Assert.AreEqual(TestData.GetVacanciesList().Count(), jobs.Count());
+        }
+
+
+        [Test(Description = "РўРµСЃС‚ РІС‹РїРѕР»РЅСЏРµС‚ РїРѕР»СѓС‡РµРЅРёРµ РІР°РєР°РЅСЃРёР№ РёР· APi, С‚Р°Рє РєР°Рє РїР°СЂР°РјРµС‚СЂ Р·Р°РїСЂРѕСЃР° Р±РѕР»СЊС€Рµ С‡РёСЃР»Р° Р·Р°РїРёСЃРµР№ РІ Р‘Р”, " +
+            "СЃ Р°РєС‚РёРІРЅС‹Рј РёРЅС‚РµСЂРЅРµС‚РѕРј Рё РѕР¶РёРґР°РµС‚ СЃРѕРѕР±С‰РµРЅРёРµ Рѕ РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕРј СЂРµР·СѓР»СЊС‚Р°С‚Рµ Рё РѕР¶РёРґР°РµС‚СЃСЏ С‡С‚Рѕ С‡РёСЃР»Рѕ Р·Р°РїРёСЃРµР№ РІ Р‘Р” СѓРІРµР»РёС‡РёС‚СЃСЏ РЅР° РїРµСЂРµРґР°РЅРЅС‹Р№ РїР°СЂР°РјРµС‚СЂ")]
+        public async Task ExecuteAsync_GetJobsFromApiWithInternetConnectionThrowsOk()
+        {
+            // Arrange
+            var count = 3;
+            var mockService = new Mock<IVacanciesService>();
+            var mockRepository = new Mock<IJobsRepository>();
+            var outputMock = new Mock<IOutputPort>();
+            var expectedMessage = string.Empty;
+
+            mockService
+                .Setup(r => r.GetVacanciesListAsync(count))
+                .Returns(new ValueTask<IEnumerable<IJob>>(TestData.GetVacanciesDtoList()));
+
+            mockRepository
+                .Setup(r => r.GetCountAsync())
+                .Returns(new ValueTask<int>(0));
+
+            outputMock
+                .Setup(x => x.Ok(It.IsAny<string>(), It.IsAny<IEnumerable<IJob>>()))
+                .Callback<string, IEnumerable<IJob>>((s, e) => expectedMessage = s);
+
+            IGetJobsListUseCase useCase = new GetJobsListUseCase(mockService.Object, mockRepository.Object);
             useCase.SetOutputPort(outputMock.Object);
 
             // Act
             await useCase.ExecuteAsync(count);
 
             // Assert
-            Assert.AreEqual("Список вакансий получен", expectedMessage);
-        }
-
-        /// <summary>
-        /// Получение списка вакансий
-        /// </summary>
-        private static IEnumerable<JobDto> GetVacanciesList()
-        {
-            return new List<JobDto>()
-            {
-                new JobDto {  Name = "Специалист по работе с клиентами", Id = 43904540, SalaryFrom = 1000, SalaryTo = 3000 },
-                new JobDto {  Name = "Менеджер по продажам", Id = 43904541, SalaryFrom = 1000, SalaryTo = 4000 },
-                new JobDto {  Name = "Аналитик", Id = 43904542, SalaryFrom = 1000, SalaryTo = 5000 },
-            };
+            Assert.AreEqual("РЎРїРёСЃРѕРє РІР°РєР°РЅСЃРёР№ РїРѕР»СѓС‡РµРЅ СЃ СЃР°Р№С‚Р°", expectedMessage);
         }
     }
 }

@@ -1,4 +1,4 @@
-namespace Application.UseCases.GetJobsList
+п»їnamespace Application.UseCases.GetJobsList
 {
     using System;
     using System.Collections.Generic;
@@ -10,65 +10,110 @@ namespace Application.UseCases.GetJobsList
 
 
     /// <summary>
-    /// Получение списка вакансий
+    /// РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РІР°РєР°РЅСЃРёР№
     /// </summary>
     public sealed class GetJobsListUseCase : IGetJobsListUseCase
     {
-        #region Поля
+        #region РџРѕР»СЏ
 
         /// <summary>
-        /// Сервис вакансий
+        /// Р РµРїРѕР·РёС‚РѕСЂРёР№
+        /// </summary>
+        private readonly IJobsRepository _jobsRepository;
+
+        /// <summary>
+        /// РЎРµСЂРІРёСЃ РІР°РєР°РЅСЃРёР№
         /// </summary>
         private readonly IVacanciesService _vacanciesService;
 
         /// <summary>
-        /// Выходной порт
+        /// Р’С‹С…РѕРґРЅРѕР№ РїРѕСЂС‚
         /// </summary>
         private IOutputPort _outputPort;
 
         #endregion
 
-        #region Конструктор
+        #region РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 
         /// <summary>
-        /// Получение списка вакансий
+        /// РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РІР°РєР°РЅСЃРёР№
         /// </summary>
-        public GetJobsListUseCase(IVacanciesService vacanciesService)
+        public GetJobsListUseCase(IVacanciesService vacanciesService, IJobsRepository jobsRepository)
         {
             _vacanciesService = vacanciesService;
+            _jobsRepository = jobsRepository;
         }
 
         #endregion
 
-        #region Методы
+        #region РњРµС‚РѕРґС‹
 
         /// <summary>
-        /// Получение списка вакансий
+        /// РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РІР°РєР°РЅСЃРёР№
         /// </summary>
-        public async ValueTask<IEnumerable<IJob>> ExecuteAsync(int count)
+        public async Task<IEnumerable<IJob>> ExecuteAsync(int count)
         {
-            IEnumerable<IJob> vacancies = await _vacanciesService.GetVacanciesList(count);
-            var sortedVacancies = new List<JobDto>();
+            var countFromDb = this._jobsRepository.GetCountAsync();
+            IEnumerable<JobDto> vacanciesDto = new List<JobDto>();
 
-            foreach (JobDto job in vacancies.OrderBy(w => w.Name))
+            if (count > await countFromDb)
             {
-                sortedVacancies.Add(job);
-            }
+                try
+                {
+                    //Р‘РµСЂРµРј РІР°РєР°РЅСЃРёРё РёР· API
+                    vacanciesDto = (IEnumerable<JobDto>)await _vacanciesService.GetVacanciesListAsync(count);
 
-            if (vacancies.Count() == count)
-            {
-                this._outputPort?.Ok("Список вакансий получен", vacancies);
+                    var vacancies = vacanciesDto.ConvertJobDtoListToJobList();
+
+                    foreach (var vacancy in vacancies)
+                    {
+                        await _jobsRepository.AddJobAsync(vacancy).ConfigureAwait(false);
+                    }
+
+                    if (vacanciesDto.Count() == count)
+                    {
+                        this._outputPort?.Ok("РЎРїРёСЃРѕРє РІР°РєР°РЅСЃРёР№ РїРѕР»СѓС‡РµРЅ СЃ СЃР°Р№С‚Р°", vacanciesDto);
+                    }
+                    else
+                    {
+                        this._outputPort?.Fail("Р’РѕР·РЅРёРєР»Р° РѕС€РёР±РєР° РІРѕ РІСЂРµРјСЏ РїРѕР»СѓС‡РµРЅРёСЏ СЃРїРёСЃРєР° РІР°РєР°РЅСЃРёР№ СЃ СЃР°Р№С‚Р°");
+                    }
+                }
+                catch
+                {
+                    this._outputPort?.Fail("РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РёРЅС‚РµСЂРЅРµС‚-СЃРѕРµРґРёРЅРµРЅРёРµ");
+                    throw new JobsException("РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РёРЅС‚РµСЂРЅРµС‚-СЃРѕРµРґРёРЅРµРЅРёРµ");
+                }
             }
             else
             {
-                this._outputPort?.Fail("Возникла ошибка во время получения списка вакансий");
+                //Р‘РµСЂРµРј РІР°РєР°РЅСЃРёРё РёР· Р‘Р”
+                var vacanciesFromDb = await _jobsRepository.GetJobsLimitNAsync(count);
+
+                vacanciesDto = vacanciesFromDb.ConvertJobListToJobDtoList();
+
+                if (vacanciesDto.Count() == count)
+                {
+                    this._outputPort?.Ok("РЎРїРёСЃРѕРє РІР°РєР°РЅСЃРёР№ РїРѕР»СѓС‡РµРЅ РёР· Р‘Р”", vacanciesDto);
+                }
+                else
+                {
+                    this._outputPort?.Fail("Р’РѕР·РЅРёРєР»Р° РѕС€РёР±РєР° РІРѕ РІСЂРµРјСЏ РїРѕР»СѓС‡РµРЅРёСЏ СЃРїРёСЃРєР° РІР°РєР°РЅСЃРёР№ РёР· Р‘Р”");
+                }
+            }
+
+            var sortedVacancies = new List<JobDto>();
+
+            foreach (JobDto job in vacanciesDto.OrderBy(w => w.Name))
+            {
+                sortedVacancies.Add(job);
             }
 
             return sortedVacancies;
         }
 
         /// <summary>
-        /// Установка выходного порта
+        /// РЈСЃС‚Р°РЅРѕРІРєР° РІС‹С…РѕРґРЅРѕРіРѕ РїРѕСЂС‚Р°
         /// </summary>
         void IGetJobsListUseCase.SetOutputPort(IOutputPort outputPort) => this._outputPort = outputPort;
 

@@ -9,5 +9,10 @@ namespace Domain
         /// Название вакансии
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Идентификатор
+        /// </summary>
+        public int Id { get; set; }
     }
 }

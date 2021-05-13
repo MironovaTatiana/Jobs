@@ -36,16 +36,72 @@ namespace DataAccess
         #region Методы
 
         /// <summary>
-        /// Добавить вакансии
+        /// Добавление вакансии
         /// </summary>
-        public async Task AddRange(IEnumerable<Job> jobsList)
+        public async Task AddJobAsync(IJob job)
         {
-            using (var context = this._context)
-            {
-                context.AddRange(jobsList);
+            var jobFromBd = await GetJobByIdAsync(job.Id);
 
-                await context.SaveChangesAsync();
+            if (jobFromBd == null)
+            {
+                await _context.AddAsync(job);
             }
+
+            await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Получение вакансии по идентификатору
+        /// </summary>
+        public async ValueTask<Job> GetJobByIdAsync(int id)
+        {
+            if (_context.JobsList.Count() > 0)
+            {
+                Job job = await _context
+                .JobsList
+                .Where(e => e.Id == id)
+                .Select(e => e)
+                .SingleOrDefaultAsync()
+                .ConfigureAwait(false);
+
+                if (job != null)
+                {
+                    return job;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Получение n первых вакансий из базы
+        /// </summary>
+        public async ValueTask<IEnumerable<Job>> GetJobsLimitNAsync(int n)
+        {
+            var jobs = new List<Job>();
+
+            if (_context.JobsList.Count() >= n)
+            {
+                 jobs = await _context
+                .JobsList
+                .OrderBy(x => x.Id)
+                .Take(n)
+                .Select(e => e)
+                .ToListAsync()
+                .ConfigureAwait(false);   
+            }
+
+            return jobs;
+        }
+
+        /// <summary>
+        /// Получение количества вакансий из БД
+        /// </summary>
+        public async ValueTask<int> GetCountAsync()
+        {
+            int count = _context.JobsList.Count();
+
+            return await new ValueTask<int>(count);
         }
 
         #endregion

@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Reflection;
 using System.IO;
 using System.Collections.Generic;
@@ -15,32 +15,33 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WebApi.Modules;
+using DataAccess.Modules;
 using Microsoft.OpenApi.Models;
-using Application.UseCases.AddJobsList;
 using Application.UseCases.GetJobsList;
 using Application.Services;
+using Application.UseCases.GetJob;
+using Infrastructure;
 
 namespace WebApi
 {
     /// <summary>
-    /// Класс для запуска приложения
+    /// РљР»Р°СЃСЃ РґР»СЏ Р·Р°РїСѓСЃРєР° РїСЂРёР»РѕР¶РµРЅРёСЏ
     /// </summary>
     public class Startup
     {
-        #region Свойства
+        #region РЎРІРѕР№СЃС‚РІР°
 
         /// <summary>
-        /// Конфигурация
+        /// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ
         /// </summary>
         public IConfiguration Configuration { get; }
 
         #endregion
 
-        #region Конструктор
+        #region РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 
         /// <summary>
-        /// Запуск
+        /// Р—Р°РїСѓСЃРє
         /// </summary>
         public Startup(IConfiguration configuration)
         {
@@ -49,21 +50,23 @@ namespace WebApi
 
         #endregion
 
-        #region Методы
+        #region РњРµС‚РѕРґС‹
 
         /// <summary>
-        /// Подключение необходимых сервисов
+        /// РџРѕРґРєР»СЋС‡РµРЅРёРµ РЅРµРѕР±С…РѕРґРёРјС‹С… СЃРµСЂРІРёСЃРѕРІ
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSQLServer(this.Configuration);
+            services.DataBaseConnectionConfiguration(this.Configuration);
             services.AddControllers();
 
            // services.AddHttpContextAccessor();
 
-            services.AddScoped<IAddJobsListUseCase, AddJobsListUseCase>();
             services.AddScoped<IGetJobsListUseCase, GetJobsListUseCase>();
+            services.AddScoped<IGetJobUseCase, GetJobUseCase>();
             services.AddScoped<IVacanciesService, VacanciesService>();
+
+            services.Configure<HhRuConfig>(Configuration.GetSection(nameof(HhRuConfig)));
 
             services.AddMvc();
             services.AddSwaggerGen(c =>
@@ -81,7 +84,7 @@ namespace WebApi
         }
 
         /// <summary>
-        /// Конфигурация
+        /// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ
         /// </summary>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

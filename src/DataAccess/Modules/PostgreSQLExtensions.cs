@@ -1,6 +1,5 @@
-﻿namespace WebApi.Modules
+﻿namespace DataAccess.Modules
 {
-    using DataAccess;
     using Domain;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;

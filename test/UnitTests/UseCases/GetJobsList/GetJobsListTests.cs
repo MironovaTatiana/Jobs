@@ -44,6 +44,7 @@ namespace UnitTests
 
             // Assert
             Assert.ThrowsAsync<JobsException>(result);
+
             return Task.CompletedTask;
         }
 
@@ -65,6 +66,7 @@ namespace UnitTests
             mockRepository
                 .Setup(r => r.GetCountAsync())
                 .Returns(new ValueTask<int>(count));
+
             mockRepository
                 .Setup(r => r.GetJobsLimitNAsync(count))
                 .Returns(new ValueTask<IEnumerable<Job>>(TestData.GetVacanciesList()));
@@ -101,6 +103,7 @@ namespace UnitTests
             mockRepository
                 .Setup(r => r.GetCountAsync())
                 .Returns(new ValueTask<int>(count));
+
             mockRepository
                 .Setup(r => r.GetJobsLimitNAsync(count))
                 .Returns(new ValueTask<IEnumerable<Job>>(TestData.GetVacanciesList()));

@@ -82,15 +82,16 @@ namespace DataAccess
 
             if (_context.JobsList.Count() >= n)
             {
-                var jobsFromDb = _context.JobsList.FromSqlRaw($"SELECT * FROM public.\"JobsList\" LIMIT @p0", n).ToList();
-
-                if (jobsFromDb?.Count() == n)
-                {
-                    return jobsFromDb;
-                }
+                 jobs = await _context
+                .JobsList
+                .OrderBy(x => x.Id)
+                .Take(n)
+                .Select(e => e)
+                .ToListAsync()
+                .ConfigureAwait(false);   
             }
 
-            return await new ValueTask<IEnumerable<Job>>(jobs);
+            return jobs;
         }
 
         /// <summary>

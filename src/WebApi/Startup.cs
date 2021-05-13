@@ -15,7 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WebApi.Modules;
+using DataAccess.Modules;
 using Microsoft.OpenApi.Models;
 using Application.UseCases.GetJobsList;
 using Application.Services;

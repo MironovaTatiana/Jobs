@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Application;
+using Application.Dtos;
 using Application.Services;
+using Application.UseCases.GetJob;
 using Domain;
 using Moq;
 using NUnit.Framework;
-using Application.Dtos;
-using Application.UseCases.GetJob;
-using Application;
 using UnitTests.UseCases;
 
 namespace UnitTests
@@ -30,10 +28,10 @@ namespace UnitTests
                 .Setup(r => r.GetVacancyByIdAsync(id))
                 .Returns(new ValueTask<JobDto>(TestData.GetVacancy()));
 
-            IGetJobUseCase useCase = new GetJobUseCase(mockService.Object, mockRepository.Object);
+            var useCase = new GetJobUseCase(mockService.Object, mockRepository.Object);
 
             // Act
-            IJob result = await useCase.ExecuteAsync(id);
+            var result = await useCase.ExecuteAsync(id);
 
             // Assert
             Assert.AreEqual(id, result.Id);
@@ -87,6 +85,7 @@ namespace UnitTests
             mockService
                 .Setup(r => r.GetVacancyByIdAsync(id))
                 .Returns(new ValueTask<JobDto>(TestData.GetVacancy()));
+
             IGetJobUseCase useCase = new GetJobUseCase(mockService.Object, mockRepository.Object);
 
             useCase.SetOutputPort(outputMock.Object);

@@ -5,10 +5,8 @@ using Application.Dtos;
 using Domain;
 using Infrastructure;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Microsoft.Extensions.Configuration;
-using System.IO;
-using System;
 
 namespace Application.Services
 {
@@ -55,19 +53,16 @@ namespace Application.Services
             try
             {
                 var request = _config.RequestVacanciesByCount?.Replace("{count}", count.ToString());
-                HttpResponseMessage response =
-                    (await _httpClient.GetAsync(request)).EnsureSuccessStatusCode();
+                var response = (await _httpClient.GetAsync(request)).EnsureSuccessStatusCode();
                 var responseBody = await response.Content.ReadAsStringAsync();
-
                 var jobs = new List<JobDto>();
-                var responseJson = TryLoadJson(responseBody);
+                var jsonResponses = JsonConvert.DeserializeObject<JsonItems>(responseBody);
 
-                foreach (var itm in responseJson)
+                foreach (var item in jsonResponses.ResponseItems)
                 {
-                    foreach (var child in itm.Value.Children())
-                    {
-                        jobs.Add(ParseToken(child));
-                    }
+                    var job = GetVacancyByIdAsync(item.Id);          
+
+                    jobs.Add(await job);
                 }
 
                 return jobs;
@@ -86,12 +81,11 @@ namespace Application.Services
             try
             {
                 var request = _config.RequestVacancyById?.Replace("{id}", id.ToString());
-                HttpResponseMessage response =
-                    (await _httpClient.GetAsync(request)).EnsureSuccessStatusCode();
+                var response = (await _httpClient.GetAsync(request)).EnsureSuccessStatusCode();
                 var responseBody = await response.Content.ReadAsStringAsync();
-                var responseJson = TryLoadJson(responseBody);
+                var jsonResponse = JsonConvert.DeserializeObject<JsonResponse>(responseBody);
 
-                return ParseToken(responseJson);
+                return ConvertJsonResponseToJobDto(jsonResponse);
             }
             catch
             {
@@ -100,23 +94,23 @@ namespace Application.Services
         }
 
         /// <summary>
-        /// Преобразуем токен в вакансию
+        /// Преобразование модели из json в вакансию
         /// </summary>
-        private JobDto ParseToken(JToken responseJson)
+        private JobDto ConvertJsonResponseToJobDto(JsonResponse jsonResponse)
         {
             try
             {
                 return new JobDto
                 {
-                    Id = responseJson["id"].Value<int>(),
-                    Name = responseJson["name"]?.Value<string>(),
-                    SalaryFrom = responseJson["salary"]?.ToString() != string.Empty ? SetDecimalValue(responseJson["salary"]!["from"]) : 0m,
-                    SalaryTo = responseJson["salary"]?.ToString() != string.Empty ? SetDecimalValue(responseJson["salary"]!["to"]) : 0m,
-                    EmployerName = responseJson["employer"]?.ToString() != string.Empty ? SetStringValue(responseJson["employer"]!["name"]) : string.Empty,
-                    ContactName = responseJson["contacts"]?.ToString() != string.Empty ? SetStringValue(responseJson["contacts"]!["name"]) : string.Empty,
-                    Description = SetStringValue(responseJson["description"]?.Value<string>()),
-                    Phone = (responseJson["contacts"]?.ToString() != string.Empty && responseJson["contacts"]!["phones"]?.ToString() != string.Empty) ? SetStringValue(responseJson["contacts"]!["phones"]!["number"]) : string.Empty,
-                    EmploymentType = responseJson["schedule"]?.ToString() != string.Empty ? SetStringValue(responseJson["schedule"]!["id"]) : string.Empty,
+                    Id = jsonResponse.Id,
+                    Name = jsonResponse.Name ?? string.Empty,
+                    SalaryFrom = jsonResponse.Salary?.SalaryFrom ?? 0m,
+                    SalaryTo = jsonResponse.Salary?.SalaryTo ?? 0m,
+                    EmployerName = jsonResponse.Employer?.EmployerName ?? string.Empty,
+                    ContactName = jsonResponse.Contact?.ContactName ?? string.Empty,
+                    Description = jsonResponse.Description ?? string.Empty,
+                    Phone = jsonResponse.Contact?.Phone?.Number ?? string.Empty,
+                    EmploymentType = jsonResponse.Employment?.EmploymentType ??  string.Empty,
                 };
             }
             catch
@@ -125,40 +119,6 @@ namespace Application.Services
             }
         }
 
-        /// <summary>
-        /// Установка числового значения
-        /// </summary>
-        private decimal SetDecimalValue(JToken token)
-        {
-            return token?.ToString() != string.Empty
-                                    ? (decimal)token
-                                    : 0m;
-        }
-
-        /// <summary>
-        /// Установка строкового значения
-        /// </summary>
-        private string SetStringValue(JToken token)
-        {
-            return token?.ToString() != string.Empty
-                                    ? token.Value<string>()
-                                    : string.Empty;
-        }
-
-        /// <summary>
-        /// Попытка загрузить JSON из ответа
-        /// </summary>
-        private JObject TryLoadJson(string responseText)
-        {
-            try
-            {
-                return JObject.Parse(responseText);
-            }
-            catch
-            {
-                return null;
-            }
-        }
 
         #endregion
     }

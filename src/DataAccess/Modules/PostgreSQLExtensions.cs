@@ -1,10 +1,11 @@
-﻿namespace DataAccess.Modules
-{
-    using Domain;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
+﻿using Domain;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
+
+namespace DataAccess.Modules
+{
     /// <summary>
     /// Класс, содержащий специальные методы расширения для IServiceCollection
     /// </summary>

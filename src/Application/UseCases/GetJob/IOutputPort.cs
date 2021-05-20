@@ -1,8 +1,7 @@
+using Domain;
+
 namespace Application.UseCases.GetJob
 {
-    using System.Collections.Generic;
-    using Domain;
-
     /// <summary>
     /// Выходной порт
     /// </summary>

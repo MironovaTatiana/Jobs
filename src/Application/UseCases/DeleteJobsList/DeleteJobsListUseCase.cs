@@ -1,10 +1,9 @@
-﻿namespace Application.UseCases.DeleteJobsList
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Domain;
+﻿using System;
+using Domain;
 
+
+namespace Application.UseCases.DeleteJobsList
+{
     /// <summary>
     /// Удаление вакансий
     /// </summary>

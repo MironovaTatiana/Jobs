@@ -1,8 +1,8 @@
+using System.Collections.Generic;
+using Domain;
+
 namespace Application.UseCases.DeleteJobsList
 {
-    using System.Collections.Generic;
-    using Domain;
-
     /// <summary>
     /// Выходной порт
     /// </summary>

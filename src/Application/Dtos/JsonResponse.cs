@@ -1,8 +1,9 @@
-﻿namespace Application.Dtos
-{
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
+
+namespace Application.Dtos
+{
     /// <summary>
     /// Модель ответа в виде json
     /// </summary>

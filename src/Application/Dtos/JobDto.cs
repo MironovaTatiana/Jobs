@@ -1,9 +1,8 @@
-﻿namespace Application.Dtos
-{
-    using System;
-    using System.ComponentModel.DataAnnotations;
-    using Domain;
+﻿using Domain;
 
+
+namespace Application.Dtos
+{
     /// <summary>
     /// Вакансия
     /// </summary>

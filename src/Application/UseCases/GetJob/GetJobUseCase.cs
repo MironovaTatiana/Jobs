@@ -1,11 +1,11 @@
-﻿namespace Application.UseCases.GetJob
+﻿using System.Threading.Tasks;
+using Application.Dtos;
+using Application.Services;
+using Domain;
+
+
+namespace Application.UseCases.GetJob
 {
-    using System.Threading.Tasks;
-    using Application.Dtos;
-    using Application.Services;
-    using Domain;
-
-
     /// <summary>
     /// Получение вакансии по идентификатору
     /// </summary>

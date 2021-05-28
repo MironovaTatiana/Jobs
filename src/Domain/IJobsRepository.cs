@@ -28,5 +28,15 @@ namespace Domain
         /// Получение n первых вакансий из базы
         /// </summary>
         ValueTask<IEnumerable<Job>> GetJobsLimitNAsync(int n);
+
+        /// <summary>
+        /// Удаление вакансий
+        /// </summary>
+        Task DeleteJobsListAsync();
+
+        /// <summary>
+        /// Удаление вакансии по идентификатору
+        /// </summary>
+        Task DeleteJobByIdAsync(int id);
     }
 }

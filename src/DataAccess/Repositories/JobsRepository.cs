@@ -36,6 +36,49 @@ namespace DataAccess
         #region Методы
 
         /// <summary>
+        /// Удаление вакансий
+        /// </summary>
+        public async Task DeleteJobsListAsync()
+        {
+            var jobs = await _context
+               .JobsList
+               .Select(e => e)
+               .ToListAsync()
+               .ConfigureAwait(false);
+
+            _context
+              .RemoveRange(jobs);
+
+            await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Удаление вакансии по идентификатору
+        /// </summary>
+        public async Task DeleteJobByIdAsync(int id)
+        {
+            if (_context.JobsList.Count() > 0)
+            {
+                Job job = await _context
+                .JobsList
+                .Where(e => e.Id == id)
+                .Select(e => e)
+                .SingleOrDefaultAsync()
+                .ConfigureAwait(false);
+
+                if (job != null)
+                {
+                    _context
+                    .JobsList
+                    .RemoveRange(job);
+
+                    await _context.SaveChangesAsync();
+
+                }
+            }
+        }
+
+        /// <summary>
         /// Добавление вакансии
         /// </summary>
         public async Task AddJobAsync(IJob job)
@@ -82,13 +125,13 @@ namespace DataAccess
 
             if (_context.JobsList.Count() >= n)
             {
-                 jobs = await _context
-                .JobsList
-                .OrderBy(x => x.Id)
-                .Take(n)
-                .Select(e => e)
-                .ToListAsync()
-                .ConfigureAwait(false);   
+                jobs = await _context
+               .JobsList
+               .OrderBy(x => x.Id)
+               .Take(n)
+               .Select(e => e)
+               .ToListAsync()
+               .ConfigureAwait(false);
             }
 
             return jobs;

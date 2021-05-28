@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Domain;
 
-namespace Application.UseCases.DeleteJobsList
+namespace Application.UseCases.DeleteJob
 {
     /// <summary>
     /// Выходной порт

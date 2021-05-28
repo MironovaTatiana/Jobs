@@ -1,26 +1,19 @@
 ﻿using System;
-using System.Reflection;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DataAccess;
-using Domain;
+using System.Reflection;
+using Application.Services;
+using Application.UseCases.DeleteJob;
+using Application.UseCases.DeleteJobsList;
+using Application.UseCases.GetJob;
+using Application.UseCases.GetJobsList;
+using DataAccess.Modules;
+using Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using DataAccess.Modules;
 using Microsoft.OpenApi.Models;
-using Application.UseCases.GetJobsList;
-using Application.Services;
-using Application.UseCases.GetJob;
-using Infrastructure;
 
 namespace WebApi
 {
@@ -65,6 +58,8 @@ namespace WebApi
             services.AddScoped<IGetJobsListUseCase, GetJobsListUseCase>();
             services.AddScoped<IGetJobUseCase, GetJobUseCase>();
             services.AddScoped<IVacanciesService, VacanciesService>();
+            services.AddScoped<IDeleteJobsListUseCase, DeleteJobsListUseCase>();
+            services.AddScoped<IDeleteJobUseCase, DeleteJobUseCase>();
 
             services.Configure<HhRuConfig>(Configuration.GetSection(nameof(HhRuConfig)));
 

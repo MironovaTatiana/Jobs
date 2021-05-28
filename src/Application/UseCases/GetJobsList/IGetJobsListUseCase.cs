@@ -1,10 +1,10 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Domain;
+
+
 namespace Application.UseCases.GetJobsList
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Domain;
-
     /// <summary>
     /// Интерфейс для получения списка вакансий
     /// </summary>

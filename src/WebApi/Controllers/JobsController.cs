@@ -8,15 +8,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using GetJobsList = Application.UseCases.GetJobsList;
 using GetJob = Application.UseCases.GetJob;
+using DeleteJobsList = Application.UseCases.DeleteJobsList;
+using DeleteJob = Application.UseCases.DeleteJob;
+using Application.UseCases.DeleteJobsList;
+using Application.UseCases.DeleteJob;
 
 namespace WebApi.Controllers
 {
     /// <summary>
-    /// Контроллер для получения вакансий
+    /// Контроллер для получения и удаления вакансий
     /// </summary>
     [ApiController]
     [Route("[controller]")]
-    public class JobsController : ControllerBase, GetJobsList.IOutputPort, GetJob.IOutputPort
+    public class JobsController : ControllerBase, GetJobsList.IOutputPort, GetJob.IOutputPort, DeleteJobsList.IOutputPort, DeleteJob.IOutputPort
     {
         #region Поля
 
@@ -62,6 +66,37 @@ namespace WebApi.Controllers
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Удаление списка вакансий
+        /// </summary>
+        [HttpPost(Name = "DeleteJobsList")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task Post(
+            [FromServices] IDeleteJobsListUseCase useCase)
+        {
+            useCase.SetOutputPort(this);
+            await useCase.ExecuteAsync()
+                .ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Удаление вакансии по идентификатору
+        /// </summary>
+        [HttpPost("{jobId}", Name = "DeleteJob")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task Post(
+            [FromServices] IDeleteJobUseCase useCase,
+            [FromRoute][Required] int jobId)
+        {
+            useCase.SetOutputPort(this);
+            await useCase.ExecuteAsync(jobId)
+                .ConfigureAwait(false);
+        }
+
         #endregion
 
         #region Реализация портов
@@ -83,6 +118,12 @@ namespace WebApi.Controllers
         /// </summary>
         [ApiExplorerSettings(IgnoreApi = true)]
         public void Ok(string s, IJob job) => this._result = this.Ok();
+
+        /// <summary>
+        /// Успешно
+        /// </summary>
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public void Ok(string s) => this._result = this.Ok();
 
         #endregion
     }

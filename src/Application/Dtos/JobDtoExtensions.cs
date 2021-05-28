@@ -1,10 +1,10 @@
-﻿namespace Application.Dtos
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Domain;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Domain;
 
+
+namespace Application.Dtos
+{
     /// <summary>
     /// Класс с методами расширения для JobDto
     /// </summary>

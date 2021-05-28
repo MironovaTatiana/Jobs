@@ -1,8 +1,8 @@
+using System.Collections.Generic;
+using Domain;
+
 namespace Application.UseCases.DeleteJobsList
 {
-    using System.Collections.Generic;
-    using Domain;
-
     /// <summary>
     /// Выходной порт
     /// </summary>
@@ -11,11 +11,11 @@ namespace Application.UseCases.DeleteJobsList
         /// <summary>
         /// Сбой
         /// </summary>
-        void Fail();
+        void Fail(string message);
 
         /// <summary>
         /// Успешно
         /// </summary>
-        void Ok(IEnumerable<IJob> jobsList);
+        void Ok(string message);
     }
 }

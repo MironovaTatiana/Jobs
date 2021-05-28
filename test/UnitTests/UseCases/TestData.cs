@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Application.Dtos;
 using Domain;
 
@@ -31,7 +27,7 @@ namespace UnitTests.UseCases
         /// <summary>
         /// Получение списка вакансий
         /// </summary>
-        public static IEnumerable<Job> GetVacanciesList()
+        public static List<Job> GetVacanciesList()
         {
             return new List<Job>()
             {
@@ -46,6 +42,10 @@ namespace UnitTests.UseCases
         /// </summary>
         public static JobDto GetVacancy() => new() { Name = "Специалист по работе с клиентами", Id = 43904540, SalaryFrom = 1000, SalaryTo = 3000 };
 
+        /// <summary>
+        /// Получение вакансии
+        /// </summary>
+        public static Job GetJob() => new() { Name = "Специалист по работе с клиентами", Id = 43904540, SalaryFrom = 1000, SalaryTo = 3000 };
         #endregion
     }
 }

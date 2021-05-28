@@ -1,9 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using Domain;
+using System;
+
+
 namespace DataAccess
 {
-    using Microsoft.EntityFrameworkCore;
-    using Domain;
-    using System;
-
     /// <summary>
     /// Контекст 
     /// </summary>

@@ -1,14 +1,13 @@
-﻿namespace Application.UseCases.GetJobsList
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Application.Dtos;
+using Application.Services;
+using Domain;
+
+
+namespace Application.UseCases.GetJobsList
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Application.Dtos;
-    using Application.Services;
-    using Domain;
-
-
     /// <summary>
     /// Получение списка вакансий
     /// </summary>

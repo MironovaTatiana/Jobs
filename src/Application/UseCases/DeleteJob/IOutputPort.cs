@@ -1,6 +1,7 @@
+using System.Collections.Generic;
 using Domain;
 
-namespace Application.UseCases.GetJob
+namespace Application.UseCases.DeleteJob
 {
     /// <summary>
     /// Выходной порт
@@ -8,13 +9,13 @@ namespace Application.UseCases.GetJob
     public interface IOutputPort
     {
         /// <summary>
-        /// Неудача
+        /// Сбой
         /// </summary>
         void Fail(string message);
 
         /// <summary>
         /// Успешно
         /// </summary>
-        void Ok(string message, IJob job);
+        void Ok(string message);
     }
 }

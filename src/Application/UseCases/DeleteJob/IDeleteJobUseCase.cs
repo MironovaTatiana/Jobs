@@ -1,16 +1,16 @@
 ﻿using System.Threading.Tasks;
 
-namespace Application.UseCases.DeleteJobsList
+namespace Application.UseCases.DeleteJob
 {
     /// <summary>
-    /// Интерфейс для удаления вакансий
+    /// Интерфейс для удаления вакансии
     /// </summary>
-    public interface IDeleteJobsListUseCase
+    public interface IDeleteJobUseCase
     {
         /// <summary>
         /// Выполнение
         /// </summary>
-        Task ExecuteAsync();
+        Task ExecuteAsync(int id);
 
         /// <summary>
         /// Установка выходного порта

@@ -14,7 +14,7 @@ namespace UnitTests
     [TestFixture(TestOf = typeof(DeleteJobUseCase))]
     public class DeleteJobTests
     {
-        [Test(Description = "Тест пытается удалить вакансию из пустой БД и получает сообщение обошибке")]
+        [Test(Description = "Тест пытается удалить вакансию из пустой БД и получает сообщение об ошибке")]
         public async Task ExecuteAsync_DeleteJobThrowsFail()
         {
             // Arrange
@@ -42,7 +42,7 @@ namespace UnitTests
             Assert.AreEqual("База данных не содержит записей", expectedMessage);
         }
 
-        [Test(Description = "Тест выполняет сравнение количества событий в репозитории до удаления и после")]
+        [Test(Description = "Тест проверяет удаление вакансии по идентификатору")]
         public async Task ExecuteAsync_CompareEventsBeforeAndAfterDeleting()
         {
             // Arrange

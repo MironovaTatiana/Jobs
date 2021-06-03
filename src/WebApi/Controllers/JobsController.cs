@@ -36,6 +36,7 @@ namespace WebApi.Controllers
         /// <summary>
         /// Получение списка вакансий
         /// </summary>
+        /// <param name="count">Количество вакансий</param>
         [HttpGet(Name = "GetJobsList")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -52,6 +53,7 @@ namespace WebApi.Controllers
         /// <summary>
         /// Получение вакансии по идентификатору
         /// </summary>
+        /// <param name="jobId">Идентификатор вакансии</param>
         [HttpGet("{jobId}", Name = "GetJob")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -84,6 +86,7 @@ namespace WebApi.Controllers
         /// <summary>
         /// Удаление вакансии по идентификатору
         /// </summary>
+        /// <param name="jobId">Идентификатор вакансии</param>
         [HttpPost("{jobId}", Name = "DeleteJob")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

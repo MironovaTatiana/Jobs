@@ -41,7 +41,7 @@ namespace UnitTests
             Assert.AreEqual("База данных не содержит записей", expectedMessage);
         }
 
-        [Test(Description = "Тест выполняет сравнение количества событий в репозитории до удаления и после")]
+        [Test(Description = "Тест проверяет удаление вакансий")]
         public async Task ExecuteAsync_CompareEventsBeforeAndAfterDeleting()
         {
             // Arrange

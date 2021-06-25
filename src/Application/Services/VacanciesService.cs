@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Application.Dtos;
 using Domain;
 using Infrastructure;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -58,12 +62,7 @@ namespace Application.Services
                 var jobs = new List<JobDto>();
                 var jsonResponses = JsonConvert.DeserializeObject<JsonItems>(responseBody);
 
-                foreach (var item in jsonResponses.ResponseItems)
-                {
-                    var job = GetVacancyByIdAsync(item.Id);          
-
-                    jobs.Add(await job);
-                }
+                jobs = WorkAsync(jsonResponses.ResponseItems);
 
                 return jobs;
             }
@@ -71,6 +70,27 @@ namespace Application.Services
             {
                 throw new HttpRequestException();
             }
+        }
+
+        /// <summary>
+        /// Получение списка вакансий 
+        /// </summary>
+        private List<JobDto> WorkAsync(List<JsonResponses> items)
+        {
+            var jobs = new List<JobDto>();
+
+            Parallel.ForEach
+                (items,
+                 new ParallelOptions { MaxDegreeOfParallelism = 10 },
+                item =>
+                    {
+                        var job = GetVacancyByIdAsync(item.Id);
+
+                        jobs.Add(job.Result);
+                    }
+                );
+
+            return jobs;
         }
 
         /// <summary>
@@ -110,7 +130,7 @@ namespace Application.Services
                     ContactName = jsonResponse.Contact?.ContactName ?? string.Empty,
                     Description = jsonResponse.Description ?? string.Empty,
                     Phone = jsonResponse.Contact?.Phone?.Number ?? string.Empty,
-                    EmploymentType = jsonResponse.Employment?.EmploymentType ??  string.Empty,
+                    EmploymentType = jsonResponse.Employment?.EmploymentType ?? string.Empty,
                 };
             }
             catch
